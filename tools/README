@@ -1,0 +1,4 @@
+Extract serial, xmodem from pyserial-2.5.tar.gz, xmodem-0.2.4.tar.gz
+eg.
+	tar -zvxf pyserial-2.5.tar.gz pyserial-2.5/serial
+	tar -zvxf xmodem-0.2.4.tar.gz xmodem-0.2.4/xmodem
