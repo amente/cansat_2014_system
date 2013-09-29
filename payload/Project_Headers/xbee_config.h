@@ -13,7 +13,7 @@
 #define CONFIG_XBEE_ZB
 #define CONFIG_XBEE_THT
 #define CONFIG_XBEE_S2B
-#define CONFIG_XBEE_FLASH_LEN           128
+#define CONFIG_XBEE_FLASH_LEN           32
 
 /* system0 component */
 #define SYS_CFG_CLK_48_MHz

@@ -1,0 +1,107 @@
+/*-------------------------------------------------------
+* Copyright (C) 2011 Digi International, All Rights Reserved.
+*
+* $Id: Application128.prm,v 1.4 2010/09/29 16:55:28 DIGI\pmillett Exp $
+*
+* This software is provided as instructional material without charge 
+* by Digi International for use by its employees and customers
+* subject to the following terms.
+*
+* PERMISSION
+* Permission is hereby granted, free of charge, to any person obtaining 
+* a copy of this software, to deal with it without restriction, 
+* including without limitation the rights to use, copy,  modify, merge, publish, 
+* distribute, sublicense, and/or sell copies of it, and to permit persons to 
+* whom it is furnished to do so, provided the above copyright notice 
+* and this permission notice are included in all derived works
+* and the use of this software is restricted to Digi products.
+*
+* WARRANTY
+* THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+* OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE, OR NONINFRINGEMENT.  
+*
+* LIABILITY
+* IN NO EVENT SHALL DIGI INTERNATIONAL BE LIABLE FOR ANY CLAIM, DAMAGES, 
+* OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, 
+* ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE, OR THE USE 
+* OR OTHER DEALINGS WITH THE SOFTWARE.
+*
+* REQUEST FOR IMPROVEMENTS
+* If you have suggestions for improvements, or source code which corrects,
+* enhances, or extends the functionality of this software, please forward
+* them to the Tech Support group in the Lindon, Utah office 
+* of Digi International addressed to the attention of 'Linus'.
+*-------------------------------------------------------*/
+
+NAMES END /* CodeWarrior will pass all the needed files to the linker by command line. But here you may add your own files too. */
+
+SEGMENTS /* Here all RAM/ROM areas of the device are listed. Used in PLACEMENT below. */
+    Z_RAM                    =  READ_WRITE   0x0080 TO 0x00FF;
+    LOW_RAM                  =  READ_WRITE   0x0100 TO 0x01FF;        /* Low RAM, previously used for flash routines */
+    SHARED_RAM               =  NO_INIT      0x0200 TO 0x0215;        /* Used to send data between bootloader and application */
+    HIGH_RAM                 =  READ_WRITE   0x0216 TO 0x17FF;        /* The rest of RAM for 96k and 128k */
+    EXTRA_RAM                =  READ_WRITE   0x1880 TO 0x207F;        /* Extra RAM only for 128k */
+
+    /* Application areas */
+    APP_NON_BANKED_LOW_ROM   =  READ_ONLY    0x2080 TO 0x7FFF;        /* Unbanked low rom area */
+    APP_NON_BANKED_HIGH_ROM  =  READ_ONLY    0xC000 TO 0xEFBB;        /* Unbanked high rom area */
+    APP_VERSION              =  READ_ONLY    0xEFBC TO 0xEFBF;        /* 4 byte pointer to app version string */
+    APP_IVT                  =  READ_ONLY    0xEFC0 TO 0xEFFD;        /* Application Interrupt Vector Table */
+    APP_START                =  READ_ONLY    0xEFFE TO 0xEFFF;        /* Application start address */
+    
+    APP_RESERVED             =  READ_ONLY    0x07B000 TO 0x07BFFF;    /* Last 4KB of PAGE 7, reserved for APP NVRAM */
+    PPAGE_0                  =  READ_ONLY    0x008000 TO 0x00A07F;    /* PAGE 0 partially contained in ROM non paged segment */ 
+    PPAGE_2                  =  READ_ONLY    0x028000 TO 0x02BFFF; 
+    PPAGE_4                  =  READ_ONLY    0x048000 TO 0x04BFFF; 
+    PPAGE_5                  =  READ_ONLY    0x058000 TO 0x05BFFF; 
+    PPAGE_6                  =  READ_ONLY    0x068000 TO 0x06BFFF; 
+    PPAGE_7                  =  READ_ONLY    0x078000 TO 0x07CFFF;
+ /* PPAGE_1                  =  READ_ONLY    0x018000 TO 0x01BFFF; PAGE already contained in segment at 0x4000-0x7FFF */
+ /* PPAGE_3                  =  READ_ONLY    0x038000 TO 0x03BFFF; PAGE already contained in segment at 0xC000-0xFFFF */
+
+    /* Bootloader (BL) areas */
+    FLASH_ROM                =  READ_ONLY    0xF000 TO 0xF0EF RELOCATE_TO 0x100;  /* Flash routines that get copied to RAM */
+    BOOTLOADER               =  READ_ONLY    0xF0F0 TO 0xFFA9;                    /* Bootloader ROM area */
+    BL_VERSION               =  READ_ONLY    0xFFAA TO 0xFFAD;                    /* 4 byte pointer to BL version number */
+END
+
+PLACEMENT  /* Here all predefined and user segments are placed into the SEGMENTS defined above. */
+    SHARED_DATA            INTO SHARED_RAM;
+
+    _DATA_ZEROPAGE,                                 /* zero page variables */
+    MY_ZEROPAGE            INTO Z_RAM;
+
+    FAR_RAM,                                        /* non-zero page variables */                       
+    DEFAULT_RAM            INTO HIGH_RAM, EXTRA_RAM, LOW_RAM;
+
+    VECTOR_DATA            INTO APP_IVT;
+    
+    PAGED_ROM, /* routines which can be banked */
+                           INTO PPAGE_0,PPAGE_2,PPAGE_4,PPAGE_5,PPAGE_6,PPAGE_7;
+    ROM_PAGE_0             INTO PPAGE_0;
+    ROM_PAGE_2             INTO PPAGE_2;
+    ROM_PAGE_4             INTO PPAGE_4;
+    ROM_PAGE_5             INTO PPAGE_5;
+    ROM_PAGE_6             INTO PPAGE_6;
+    ROM_PAGE_7             INTO PPAGE_7;
+    CONST_PAGE_0           INTO PPAGE_0;
+    CONST_PAGE_2           INTO PPAGE_2;
+    CONST_PAGE_4           INTO PPAGE_4; //BL96 and higher
+    CONST_PAGE_5           INTO PPAGE_5; //BL96 and higher
+    CONST_PAGE_6           INTO PPAGE_6; //BL128
+    CONST_PAGE_7           INTO PPAGE_7; //BL128
+    
+    _PRESTART,                                
+    STARTUP,                   /* startup data structures */    
+    ROM_VAR,                   /* constant variables */
+    STRINGS,                   /* string literals */      
+    VIRTUAL_TABLE_SEGMENT,     /* C++ virtual table segment */
+    DEFAULT_ROM,
+    COPY                   INTO APP_NON_BANKED_LOW_ROM,
+                                APP_NON_BANKED_HIGH_ROM; /* -OnB=b have to be passed to the compiler? */
+END
+
+STACKSIZE 0x200
+
+/* Interrupt vectors are defined in irq_vectors.c */

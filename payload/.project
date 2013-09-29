@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>payload</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.cdt.managedbuilder.core.genmakebuilder</name>
+			<triggers>clean,full,incremental,</triggers>
+			<arguments>
+				<dictionary>
+					<key>?name?</key>
+					<value></value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.append_environment</key>
+					<value>true</value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.buildArguments</key>
+					<value>-j16</value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.buildCommand</key>
+					<value>${system:ECLIPSE_HOME}/../gnu/bin/mingw32-make</value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.buildLocation</key>
+					<value>${ProjDirPath}/Release</value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.contents</key>
+					<value>org.eclipse.cdt.make.core.activeConfigSettings</value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.enableAutoBuild</key>
+					<value>false</value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.enableCleanBuild</key>
+					<value>true</value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.enableFullBuild</key>
+					<value>true</value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.stopOnError</key>
+					<value>true</value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.useDefaultBuildCmd</key>
+					<value>true</value>
+				</dictionary>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
+			<name>org.eclipse.cdt.managedbuilder.core.ScannerConfigBuilder</name>
+			<triggers>full,incremental,</triggers>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>com.digi.xbee.build.XBeePrjNature</nature>
+		<nature>org.eclipse.cdt.core.cnature</nature>
+		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
+		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>Project_Headers/24xxx.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/24xxx.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/25xxxx.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/25xxxx.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/adc.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/adc.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/cbuffer.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/cbuffer.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/char_lcd.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/char_lcd.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/debug.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/debug.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/ds18b20.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/ds18b20.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/ds1904.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/ds1904.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/endpoints.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/endpoints.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/flash.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/flash.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/gpio_ports.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/gpio_ports.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/gpios.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/gpios.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/graphic_display.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/graphic_display.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/hardware.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/hardware.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/i2c.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/i2c.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/icapture.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/icapture.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/lvd.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/lvd.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/mc9s08qe128.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/mc9s08qe128.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/mc9s08qe32.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/mc9s08qe32.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/mpr121.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/mpr121.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/ocompare.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/ocompare.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/one_wire.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/one_wire.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/pan_init.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/pan_init.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/pm.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/pm.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/pwm.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/pwm.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/radio_gpios.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/radio_gpios.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/rtc.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/rtc.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/spi.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/spi.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/system.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/system.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/timer.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/timer.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/tpm.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/tpm.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/types.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/types.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/uart.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/uart.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/utils.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/utils.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/veeprom.h</name>
+			<type>1</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/veeprom.h</location>
+		</link>
+		<link>
+			<name>Project_Headers/wpan</name>
+			<type>2</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/wpan</location>
+		</link>
+		<link>
+			<name>Project_Headers/xbee</name>
+			<type>2</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/xbee</location>
+		</link>
+		<link>
+			<name>Project_Headers/zigbee</name>
+			<type>2</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/headers/zigbee</location>
+		</link>
+		<link>
+			<name>Sources/cpu</name>
+			<type>2</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/cpu</location>
+		</link>
+		<link>
+			<name>Sources/drivers</name>
+			<type>2</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/drivers</location>
+		</link>
+		<link>
+			<name>Sources/misc</name>
+			<type>2</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/misc</location>
+		</link>
+		<link>
+			<name>Sources/pan</name>
+			<type>2</type>
+			<location>C:/Program Files (x86)/Digi/PXBee/v1.5/pxbee_api/1.5.5/src/pan</location>
+		</link>
+	</linkedResources>
+</projectDescription>

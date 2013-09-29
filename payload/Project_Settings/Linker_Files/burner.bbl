@@ -1,0 +1,69 @@
+/* Create a combined Srecord file with the bootloader and application */
+OPENFILE "%ABS_FILE%.s19"
+format=motorola
+busWidth=1
+origin=0
+len=0x10000
+destination=0
+SRECORD=Sx
+SENDBYTE 1 "%ABS_FILE%"
+CLOSE
+
+OPENFILE "%ABS_FILE%.bin"
+format=binary
+busWidth=1
+origin=0x008000
+len=0x2080
+destination=0x0
+SRECORD=Sx
+SENDBYTE 1 "%ABS_FILE%"
+
+origin=0x002080
+len=0x1F80
+destination=0x2080
+SRECORD=Sx
+SENDBYTE 1 "%ABS_FILE%" 
+
+origin=0x4000
+len=0x4000
+destination=0x4000
+SRECORD=Sx
+SENDBYTE 1 "%ABS_FILE%" 
+
+origin=0x028000
+len=0x4000
+destination=0x8000
+SRECORD=Sx
+SENDBYTE 1 "%ABS_FILE%" 
+
+origin=0xC000
+len=0x4000
+destination=0xC000
+SRECORD=Sx
+SENDBYTE 1 "%ABS_FILE%" 
+
+origin=0x048000
+len=0x4000
+destination=0x10000
+SRECORD=Sx
+SENDBYTE 1 "%ABS_FILE%" 
+
+origin=0x058000
+len=0x4000
+destination=0x14000
+SRECORD=Sx
+SENDBYTE 1 "%ABS_FILE%" 
+
+origin=0x068000
+len=0x4000
+destination=0x18000
+SRECORD=Sx
+SENDBYTE 1 "%ABS_FILE%" 
+
+origin=0x078000
+len=0x3000
+destination=0x1C000
+SRECORD=Sx
+SENDBYTE 1 "%ABS_FILE%" 
+
+CLOSE
