@@ -14,7 +14,7 @@
       </setting>
       <setting name="Enable Watchdog">
         <id>enable_watchdog</id>
-        <value>True</value>
+        <value>False</value>
       </setting>
       <setting name="Watchdog timeout">
         <id>watchdog_timeout</id>
@@ -140,7 +140,7 @@
           </setting>
           <setting name="Process incoming frames">
             <id>packet_reception_ao</id>
-            <value>None</value>
+            <value>Disabled</value>
           </setting>
           <setting name="Over-the-Air Firmware Update">
             <id>ota_update_enable</id>
@@ -167,7 +167,7 @@
       </setting>
       <setting name="Baud Rate">
         <id>baud_rate</id>
-        <value>115200</value>
+        <value>9600</value>
       </setting>
       <setting name="Parity">
         <id>parity</id>

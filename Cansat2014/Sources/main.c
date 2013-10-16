@@ -34,21 +34,21 @@
  *   XPIN3 = uart0 [RX Pin]
  *   XPIN4 = <<UNUSED>>
  *   XPIN5 = special0 [Reset Pin]
- *   XPIN6 = <<UNUSED>>
- *   XPIN7 = i2c0 [SDA Pin]
- *   XPIN8 = <<UNUSED>>
- *   XPIN9 = power_management0 [Sleep Request Pin]
+ *   XPIN6 = special0 [RSSI PWM Pin]
+ *   XPIN7 = <<UNUSED>>
+ *   XPIN8 = special0 [BKGD Pin]
+ *   XPIN9 = <<UNUSED>>
  *   XPIN10 = GND
  *   XPIN11 = <<UNUSED>>
  *   XPIN12 = <<UNUSED>>
- *   XPIN13 = power_management0 [On Sleep Pin]
+ *   XPIN13 = <<UNUSED>>
  *   XPIN14 = VCC REF
- *   XPIN15 = <<UNUSED>>
+ *   XPIN15 = special0 [Association Pin]
  *   XPIN16 = <<UNUSED>>
  *   XPIN17 = <<UNUSED>>
  *   XPIN18 = <<UNUSED>>
- *   XPIN19 = i2c0 [SCL Pin]
- *   XPIN20 = adc0 [ADC Pin]
+ *   XPIN19 = <<UNUSED>>
+ *   XPIN20 = special0 [Commissioning Pin]
  *
  ************************************/
 
@@ -105,12 +105,16 @@ void main(void)
 		temp = readTemperature();
 		printf("%d",temp);
 		*/
+
+#ifdef __PAYLOAD__
+		printf("HELLO PAYLOAD WORLD!\n");
+#else
+		printf("HELLO CONTAINER WORLD!\n");
+#endif
 		
-		announce("HELLO WORLD!\n");
+		repeat(t=0; (t++)<4*1000; sys_udelay(250));  // delay 1s
 		
-		repeat(t=0; (t++)<4*1000; sys_udelay(250));
-		
-		sys_watchdog_reset();
-		sys_xbee_tick();
+		//sys_watchdog_reset();
+		//sys_xbee_tick();
 	}
 }

@@ -18,8 +18,6 @@
 /* system0 component */
 #define SYS_CFG_CLK_48_MHz
 #define SYS_CFG_BUSCLK_SYSCLK_DIV2
-#define ENABLE_WD
-#define WD_CFG_LONG_TOUT
 
 /* special0 component */
 #define ENABLE_ASSOCIATION_LED_XPIN_15
@@ -36,7 +34,7 @@
 /* uart0 component */
 #define ENABLE_UART
 #define UART_CFG_MODE_2W                1
-#define UART_CFG_BAUDRATE               115200
+#define UART_CFG_BAUDRATE               9600
 #define UART_CFG_PAR_EN                 UART_CFG_PARITY_DIS
 #define UART_CFG_PAR_VAL                UART_CFG_PARITY_ODD
 #define UART_CFG_BITS                   UART_CFG_BITS_8
