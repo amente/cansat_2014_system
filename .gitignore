@@ -10,5 +10,6 @@
 
 # Binaries 
 bin/
-Release/
+payload/
+container/
 
