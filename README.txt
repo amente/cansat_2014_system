@@ -1,3 +1,1 @@
-Import Xbee Projects (eg payload) in code warrior to work on.
-
-Do: File--> Import--> Digi Xbee --> Xbee Project
+Import it as a regular Eclipse project but do not copy it into your workspace.
