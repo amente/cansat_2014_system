@@ -84,10 +84,12 @@ void rtc_periodic_task(void)
  * 
  */
 
+
+
 void main(void)
 {
 	uint32_t t;
-	
+
 	sys_hw_init();
 	sys_xbee_init();
 	sys_app_banner();
@@ -107,9 +109,9 @@ void main(void)
 		*/
 
 #ifdef __PAYLOAD__
-		printf("HELLO PAYLOAD WORLD!\n");
+		printf("HELLO PAYLOAD WORLD!");
 #else
-		printf("HELLO CONTAINER WORLD!\n");
+		printf("HELLO CONTAINER WORLD!");
 #endif
 		
 		repeat(t=0; (t++)<4*1000; sys_udelay(250));  // delay 1s
