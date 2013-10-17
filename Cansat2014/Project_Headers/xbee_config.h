@@ -9,7 +9,7 @@
 #define __XBEE_CONFIG_H_
 
 /* Project definitions */
-#define APP_VERSION_STRING              "Cansat2014"
+
 #define CONFIG_XBEE_ZB
 #define CONFIG_XBEE_THT
 #define CONFIG_XBEE_S2B
