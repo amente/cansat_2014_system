@@ -43,11 +43,11 @@
     <settings>
       <setting name="Association LED Pin">
         <id>association_pin</id>
-        <value>Enabled</value>
+        <value>Disabled</value>
       </setting>
       <setting name="Commissioning Pin">
         <id>commissioning_pin</id>
-        <value>Enabled</value>
+        <value>Disabled</value>
       </setting>
       <setting name="Reset Pin">
         <id>reset_pin</id>
@@ -55,33 +55,17 @@
       </setting>
       <setting name="BDM Pin">
         <id>bdm_pin</id>
-        <value>Enabled</value>
+        <value>Disabled</value>
       </setting>
       <setting name="RSSI PWM Pin">
         <id>rssi_pwm_pin</id>
-        <value>Enabled</value>
+        <value>Disabled</value>
       </setting>
     </settings>
     <pin_distribution>
       <template name="Default template" locked="false">
-        <pin_config name="Association Pin">
-          <selected_pin>15</selected_pin>
-          <is_dynamic>false</is_dynamic>
-        </pin_config>
-        <pin_config name="Commissioning Pin">
-          <selected_pin>20</selected_pin>
-          <is_dynamic>false</is_dynamic>
-        </pin_config>
         <pin_config name="Reset Pin">
           <selected_pin>5</selected_pin>
-          <is_dynamic>false</is_dynamic>
-        </pin_config>
-        <pin_config name="BKGD Pin">
-          <selected_pin>8</selected_pin>
-          <is_dynamic>false</is_dynamic>
-        </pin_config>
-        <pin_config name="RSSI PWM Pin">
-          <selected_pin>6</selected_pin>
           <is_dynamic>false</is_dynamic>
         </pin_config>
       </template>
@@ -200,6 +184,44 @@
           <selected_pin>2</selected_pin>
           <is_dynamic>false</is_dynamic>
         </pin_config>
+      </template>
+    </pin_distribution>
+  </component>
+  <component name="i2c0">
+    <id>i2c</id>
+    <settings>
+    </settings>
+    <pin_distribution>
+      <template name="Default template" locked="false">
+        <pin_config name="SDA Pin">
+          <selected_pin>7</selected_pin>
+          <is_dynamic>false</is_dynamic>
+        </pin_config>
+        <pin_config name="SCL Pin">
+          <selected_pin>19</selected_pin>
+          <is_dynamic>false</is_dynamic>
+        </pin_config>
+      </template>
+    </pin_distribution>
+  </component>
+  <component name="eep24xxx0">
+    <id>24xxx</id>
+    <settings>
+      <setting name="I2C Slave Sub-Address">
+        <id>slave_subaddress</id>
+        <value>0</value>
+      </setting>
+      <setting name="EEPROM Address bytes">
+        <id>address_bytes</id>
+        <value>2</value>
+      </setting>
+      <setting name="EEPROM Page Size">
+        <id>period</id>
+        <value>64</value>
+      </setting>
+    </settings>
+    <pin_distribution>
+      <template name="Default template" locked="false">
       </template>
     </pin_distribution>
   </component>

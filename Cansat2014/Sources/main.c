@@ -34,31 +34,37 @@
  *   XPIN3 = uart0 [RX Pin]
  *   XPIN4 = <<UNUSED>>
  *   XPIN5 = special0 [Reset Pin]
- *   XPIN6 = special0 [RSSI PWM Pin]
- *   XPIN7 = <<UNUSED>>
- *   XPIN8 = special0 [BKGD Pin]
+ *   XPIN6 = <<UNUSED>>
+ *   XPIN7 = i2c0 [SDA Pin]
+ *   XPIN8 = <<UNUSED>>
  *   XPIN9 = <<UNUSED>>
  *   XPIN10 = GND
  *   XPIN11 = <<UNUSED>>
  *   XPIN12 = <<UNUSED>>
  *   XPIN13 = <<UNUSED>>
  *   XPIN14 = VCC REF
- *   XPIN15 = special0 [Association Pin]
+ *   XPIN15 = <<UNUSED>>
  *   XPIN16 = <<UNUSED>>
  *   XPIN17 = <<UNUSED>>
  *   XPIN18 = <<UNUSED>>
- *   XPIN19 = <<UNUSED>>
- *   XPIN20 = special0 [Commissioning Pin]
+ *   XPIN19 = i2c0 [SCL Pin]
+ *   XPIN20 = <<UNUSED>>
  *
  ************************************/
 
+/** 
+ * The payload code will be compiled with the -D__PAYLOAD__ macro so if there's a section 
+ * that only applies to the payload then surround it with something like:
+ * 
+ * #ifdef __PAYLOAD__
+ * 		// do something
+ * #endif
+ * 
+ */
 #include <xbee_config.h>
 #include <types.h>
 #include <ctype.h>
-
-#include <British.h>
-
-
+#include <util.h>
 
 #if defined(RTC_ENABLE_PERIODIC_TASK)
 void rtc_periodic_task(void)
@@ -74,48 +80,22 @@ void rtc_periodic_task(void)
 }
 #endif
 
-/** 
- * The payload code will be compiled with the -D__PAYLOAD__ macro so if there's a section 
- * that only applies to the payload then surround it with something like:
- * 
- * #ifdef __PAYLOAD__
- * 		// do something
- * #endif
- * 
- */
-
-
-
 void main(void)
 {
-	uint32_t t;
-
+	unsigned char buffer[32];
+	
 	sys_hw_init();
-	sys_xbee_init();
-	sys_app_banner();
-
-	repeat (;;)	
+	//sys_xbee_init();
+	//sys_app_banner();
+	printf("\rCompiled Time: %s %s\r", __DATE__, __TIME__);
+	
+	
+	for(;;)	
 	{
-		/* App code starts here */
-		
-		/* BMP085
-		printf("Raw Pressure:");
-		pressure = readPressure();
-		printf("%d",pressure);
-			
-		printf("Raw Temperature:");	
-		temp = readTemperature();
-		printf("%d",temp);
-		*/
+		rc=eeprom_24xxx_read(EEPROM_0, buffer, 0, 25);
+		printf("RC=%d Data=%s\r", rc, buffer);
 
-#ifdef __PAYLOAD__
-		printf("HELLO PAYLOAD WORLD!");
-#else
-		printf("HELLO CONTAINER WORLD!");
-#endif
-		
-		repeat(t=0; (t++)<4*1000; sys_udelay(250));  // delay 1s
-		
+		delay(1000);  // delay 1s
 		//sys_watchdog_reset();
 		//sys_xbee_tick();
 	}

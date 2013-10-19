@@ -20,11 +20,7 @@
 #define SYS_CFG_BUSCLK_SYSCLK_DIV2
 
 /* special0 component */
-#define ENABLE_ASSOCIATION_LED_XPIN_15
-#define ENABLE_COMMISSIONING_XPIN_20
 #define ENABLE_RESET_PIN_XPIN_5
-#define ENABLE_BKGD_PIN_XPIN_8
-#define ENABLE_RSSI_PWM_XPIN_6
 
 /* rtc0 component */
 #define ENABLE_RTC
@@ -42,14 +38,22 @@
 #define UART_CFG_RX_BUF_LEN             32
 #define ENABLE_STDIO_PRINTF_SCANF       1
 
+/* i2c0 component */
+#define ENABLE_I2C
+
+/* eep24xxx0 component */
+#define EEPROM_24XXX_0                  eep24xxx0
+#define eep24xxx0                       EEPROM_0
+#define EEPROM_24XXX_SLAVE_SUBADDRESS_0 0
+#define EEPROM_24XXX_ADDRESS_BYTES_0    2
+#define EEPROM_24XXX_PAGE_SIZE_0        64
+
 /* Used pins macros */
-#define XPIN_15_USED
-#define XPIN_20_USED
 #define XPIN_5_USED
-#define XPIN_8_USED
-#define XPIN_6_USED
 #define XPIN_3_USED
 #define XPIN_2_USED
+#define XPIN_7_USED
+#define XPIN_19_USED
 
 
 /* Components includes */
@@ -62,5 +66,7 @@
 #include <xbee/wpan.h>
 #include <xbee/atcmd.h>
 #include <uart.h>
+#include <i2c.h>
+#include <24xxx.h>
 
 #endif /* __XBEE_CONFIG_H_ */

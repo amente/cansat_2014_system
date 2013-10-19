@@ -1,7 +1,12 @@
-#define XBEE_RESET_PIN  4
-#define MAX_CMD_LEN     20
 usb_serial_class &Term = Serial;
 HardwareSerial &Xbee = Serial1;
+
+#define XBEE_RESET_PIN  4
+#define MAX_CMD_LEN     20
+#define XMODEM_TIMEOUT  5
+
+#define RESTART_CMD     "q!"
+#define RESTART_BL_CMD  "wq"
 
 void setup() 
 {
@@ -9,6 +14,8 @@ void setup()
   Xbee.begin(9600);
 
   pinMode(XBEE_RESET_PIN, INPUT);
+  pinMode(SCL, INPUT);
+  pinMode(SDA, INPUT);
 }
 
 void loop() 
@@ -23,7 +30,7 @@ void serialEvent()
   if (Term.available())
   {
     char temp = Term.read();
-    if ( (temp == ':' || cmd.length() ) && (millis() - last > 5) )  // also checks for xmodem; threshold = 5ms
+    if ( (temp == ':' || cmd.length() ) && (millis() - last > XMODEM_TIMEOUT) )  // also checks for xmodem; threshold = 5ms
     {
       Term.write(temp);
       if (temp != '\r')
@@ -54,16 +61,19 @@ void serialEvent()
   }
 
   if (Xbee.available())
-    Term.write(Xbee.read());  
+  {
+    if (!cmd.length())
+      Term.write(Xbee.read());  
+  }
 }
 
 void parseCmd(String cmd)
 {
   cmd.toLowerCase();
   
-  if (cmd == "q!")
+  if (cmd == RESTART_CMD)
     rebootXbee(false);
-  else if (cmd == "wq")
+  else if (cmd == RESTART_BL_CMD)
     rebootXbee(true);
   
   // unmatched command
