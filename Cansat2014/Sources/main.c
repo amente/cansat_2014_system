@@ -66,37 +66,25 @@
 #include <ctype.h>
 #include <util.h>
 
-#if defined(RTC_ENABLE_PERIODIC_TASK)
-void rtc_periodic_task(void)
-{
-    /*
-     * Function call every RTC_CFG_PERIODIC_TASK_PERIOD * 8 ms.
-     * This function is called from the timer ISR, please be brief
-     * and exit, or just set a flag and do your home work in the 
-     * main loop
-     */
-
-    /* Implement your code here */
-}
-#endif
+#include <TSL2561.h>
 
 void main(void)
 {
-	unsigned char buffer[32];
-	
+	uint8_t reg = TSL2561_REG_ID;
+	uint8_t id =0;
 	sys_hw_init();
 	//sys_xbee_init();
-	//sys_app_banner();
-	printf("\rCompiled Time: %s %s\r", __DATE__, __TIME__);
-	
-	
+	//sys_app_banner();TSL2561_test()
+	printf("\rCompiled on: %s %s\r", __DATE__, __TIME__);
+
+
 	for(;;)	
 	{
-		rc=eeprom_24xxx_read(EEPROM_0, buffer, 0, 25);
-		printf("RC=%d Data=%s\r", rc, buffer);
-
-		delay(1000);  // delay 1s
-		//sys_watchdog_reset();
+		printf("%d\r", TSL2561_read_raw());
+		
+		delay(200);  // delay 1s
+		//sys_watchdog_reset();:wq
+		
 		//sys_xbee_tick();
 	}
 }
