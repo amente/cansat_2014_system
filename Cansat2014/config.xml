@@ -96,11 +96,11 @@
       </setting>
       <setting name="Task period">
         <id>task_period</id>
-        <value>125</value>
+        <value>50</value>
       </setting>
       <setting name="Real task period">
         <id>real_task_period</id>
-        <value>500 ms</value>
+        <value>200 ms</value>
       </setting>
       <setting name="Enable Calendar">
         <id>enable_calendar</id>

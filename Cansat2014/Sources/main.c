@@ -34,21 +34,21 @@
  *   XPIN3 = uart0 [RX Pin]
  *   XPIN4 = <<UNUSED>>
  *   XPIN5 = special0 [Reset Pin]
- *   XPIN6 = special0 [RSSI PWM Pin]
+ *   XPIN6 = <<UNUSED>>
  *   XPIN7 = i2c0 [SDA Pin]
- *   XPIN8 = special0 [BKGD Pin]
+ *   XPIN8 = <<UNUSED>>
  *   XPIN9 = <<UNUSED>>
  *   XPIN10 = GND
  *   XPIN11 = <<UNUSED>>
  *   XPIN12 = <<UNUSED>>
  *   XPIN13 = <<UNUSED>>
  *   XPIN14 = VCC REF
- *   XPIN15 = special0 [Association Pin]
+ *   XPIN15 = <<UNUSED>>
  *   XPIN16 = <<UNUSED>>
  *   XPIN17 = <<UNUSED>>
  *   XPIN18 = <<UNUSED>>
  *   XPIN19 = i2c0 [SCL Pin]
- *   XPIN20 = special0 [Commissioning Pin]
+ *   XPIN20 = <<UNUSED>>
  *
  ************************************/
 
@@ -65,53 +65,26 @@
 #include <types.h>
 #include <ctype.h>
 #include <util.h>
-#include <24xxx.h>
-#include <BMP085.h>
 
-#if defined(RTC_ENABLE_PERIODIC_TASK)
-void rtc_periodic_task(void)
-{
-    /*
-     * Function call every RTC_CFG_PERIODIC_TASK_PERIOD * 8 ms.
-     * This function is called from the timer ISR, please be brief
-     * and exit, or just set a flag and do your home work in the 
-     * main loop
-     */
-
-    /* Implement your code here */
-}
-#endif
-
-//float temp;
-//uint32_t pressure;
+#include <TSL2561.h>
 
 void main(void)
 {
-	unsigned char buffer[32];
-	ssize_t rc;
-	
+	uint8_t reg = TSL2561_REG_ID;
+	uint8_t id =0;
 	sys_hw_init();
-	sys_xbee_init();
-	//sys_app_banner();
-	printf("\rCompiled Time: %s %s\r", __DATE__, __TIME__);
-	
-	
+	//sys_xbee_init();
+	//sys_app_banner();TSL2561_test()
+	printf("\rCompiled on: %s %s\r", __DATE__, __TIME__);
+
+
 	for(;;)	
 	{
-		rc=eeprom_24xxx_read(EEPROM_0, buffer, 0, 25);
-		printf("RC=%d Data=%s\r", rc, buffer);
+		printf("%d\r", TSL2561_read_raw());
 		
+		delay(200);  // delay 1s
+		//sys_watchdog_reset();:wq
 		
-		//printf("Temperature: ");
-		//temp = BMP085readTemperature();
-		//printf("%f\n",temp);
-		
-		//printf("Pressure: ");
-		//pressure = BMP085readRawTemperature();
-		//printf("%d\n",pressure);
-		
-		delay(1000);  // delay 1s
-		//sys_watchdog_reset();
 		//sys_xbee_tick();
 	}
 }
