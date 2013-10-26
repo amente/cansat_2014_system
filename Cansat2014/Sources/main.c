@@ -34,21 +34,21 @@
  *   XPIN3 = uart0 [RX Pin]
  *   XPIN4 = <<UNUSED>>
  *   XPIN5 = special0 [Reset Pin]
- *   XPIN6 = <<UNUSED>>
+ *   XPIN6 = special0 [RSSI PWM Pin]
  *   XPIN7 = i2c0 [SDA Pin]
- *   XPIN8 = <<UNUSED>>
+ *   XPIN8 = special0 [BKGD Pin]
  *   XPIN9 = <<UNUSED>>
  *   XPIN10 = GND
  *   XPIN11 = <<UNUSED>>
  *   XPIN12 = <<UNUSED>>
  *   XPIN13 = <<UNUSED>>
  *   XPIN14 = VCC REF
- *   XPIN15 = <<UNUSED>>
+ *   XPIN15 = special0 [Association Pin]
  *   XPIN16 = <<UNUSED>>
  *   XPIN17 = <<UNUSED>>
  *   XPIN18 = <<UNUSED>>
  *   XPIN19 = i2c0 [SCL Pin]
- *   XPIN20 = <<UNUSED>>
+ *   XPIN20 = special0 [Commissioning Pin]
  *
  ************************************/
 
@@ -65,6 +65,8 @@
 #include <types.h>
 #include <ctype.h>
 #include <util.h>
+#include <24xxx.h>
+#include <BMP085.h>
 
 #if defined(RTC_ENABLE_PERIODIC_TASK)
 void rtc_periodic_task(void)
@@ -80,12 +82,16 @@ void rtc_periodic_task(void)
 }
 #endif
 
+//float temp;
+//uint32_t pressure;
+
 void main(void)
 {
 	unsigned char buffer[32];
+	ssize_t rc;
 	
 	sys_hw_init();
-	//sys_xbee_init();
+	sys_xbee_init();
 	//sys_app_banner();
 	printf("\rCompiled Time: %s %s\r", __DATE__, __TIME__);
 	
@@ -94,7 +100,16 @@ void main(void)
 	{
 		rc=eeprom_24xxx_read(EEPROM_0, buffer, 0, 25);
 		printf("RC=%d Data=%s\r", rc, buffer);
-
+		
+		
+		//printf("Temperature: ");
+		//temp = BMP085readTemperature();
+		//printf("%f\n",temp);
+		
+		//printf("Pressure: ");
+		//pressure = BMP085readRawTemperature();
+		//printf("%d\n",pressure);
+		
 		delay(1000);  // delay 1s
 		//sys_watchdog_reset();
 		//sys_xbee_tick();
