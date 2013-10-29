@@ -24,5 +24,6 @@
 
 uint16_t BMP085_readTemp(void);
 uint32_t BMP085_readPressure(void);
+void BMP085_printCalibrationData(void);
 
 #endif
