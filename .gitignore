@@ -13,3 +13,5 @@ bin/
 payload/
 container/
 
+test.c
+

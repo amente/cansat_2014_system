@@ -18,10 +18,10 @@ static int TSL2561_set_cmd(uint8_t reg)
 
 bool_t TSL2561_test(void)
 {
-	uint16_t id = 0;
+	uint16_t id;
 	TSL2561_set_cmd(TSL2561_REG_ID);
 	i2c_read(&id, 2);
-	return TSL2561_ID == id;	
+	return TSL2561_ID == (id >> 8);	
 }
 
 

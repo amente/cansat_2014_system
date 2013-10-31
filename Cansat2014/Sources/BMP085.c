@@ -12,11 +12,22 @@
 #include <BMP085.h>
 #include <util.h>
 
+static uint32_t buffer;
+static uint8_t sendReg;
+
+bool_t BMP085_test(void)
+{				
+	i2c_set_addr(BMP085_I2CADDR);		
+	sendReg = BMP085_CONTROL;	
+	i2c_write_no_stop(&sendReg,1);
+	i2c_read(&buffer,2);
+	
+	return BMP085_CHIP_ID == (buffer >> 24);
+}
 
 uint16_t BMP085_readTemp(){
 	
-	uint16_t buffer;
-	uint8_t sendReg = BMP085_CONTROL;						
+	sendReg = BMP085_CONTROL;						
 	i2c_set_addr(BMP085_I2CADDR);		
 	i2c_write_no_stop(&sendReg,1);
 	sendReg = BMP085_READTEMPCMD;
@@ -26,13 +37,12 @@ uint16_t BMP085_readTemp(){
 	i2c_write_no_stop(&sendReg,1);
 	i2c_read(&buffer,2);
 	
-	return buffer;
+	return buffer >> 16;
 }
 
 uint32_t BMP085_readPressure(){
 	
-	uint32_t buffer;
-	uint8_t  sendReg = BMP085_CONTROL;
+	sendReg = BMP085_CONTROL;
 	i2c_set_addr(BMP085_I2CADDR);		
 	i2c_write_no_stop(&sendReg,1);
 	sendReg = BMP085_READPRESSURECMD | (BMP085_ULTRAHIGH_RES<<6);
@@ -48,7 +58,7 @@ uint32_t BMP085_readPressure(){
 
 void BMP085_printCalibrationData(){
 	
-	uint16_t ac1,ac2,ac3,b1,b2,mb,mc,md;
+		uint16_t ac1,ac2,ac3,b1,b2,mb,mc,md;
 		int16_t ac4,ac5,ac6;
 		uint8_t sendReg  = 0xAA;
 		
