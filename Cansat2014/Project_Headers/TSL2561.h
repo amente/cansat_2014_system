@@ -26,8 +26,7 @@
 #define 	TSL2561_REG_DATA0LOW		0x0C	// Low bytes for ADC0 (full range)
 #define 	TSL2561_REG_DATA0HIGH		0x0D	// High bytes for ADC0 (full range)
 
-#define 	TSL2561_test() (TSL2561_read_raw() > 0)	// This will do for now..
-
+bool_t		TSL2561_test(void);
 uint16_t	TSL2561_read_raw(void);
 
 #endif /* TSL2561_H_ */

@@ -16,6 +16,14 @@ static int TSL2561_set_cmd(uint8_t reg)
 	return i2c_write_no_stop(&reg, 1);
 }
 
+bool_t TSL2561_test(void)
+{
+	uint16_t id = 0;
+	TSL2561_set_cmd(TSL2561_REG_ID);
+	i2c_read(&id, 2);
+	return TSL2561_ID == id;	
+}
+
 
 static int TSL2561_power(bool_t state)  // 1 = ON, 0= OFF
 {
