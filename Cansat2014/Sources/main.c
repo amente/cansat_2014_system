@@ -64,11 +64,11 @@
 #include <xbee_config.h>
 #include <types.h>
 #include <ctype.h>
+#include <drivers.h>
 #include <util.h>
-#include <BMP085.h>
-#include <TSL2561.h>
 
-void startTest(void);
+
+void testLoop(void);
 void main(void)
 {	
 	sys_hw_init();
@@ -77,7 +77,7 @@ void main(void)
 	printf("\rCompiled on: %s %s\r", __DATE__, __TIME__);
 	for(;;)	
 	{	
-		startTest();
+		testLoop();
 		//sys_watchdog_reset();:wq		
 		//sys_xbee_tick();
 	}
