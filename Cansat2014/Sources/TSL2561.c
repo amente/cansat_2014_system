@@ -47,7 +47,7 @@ uint16_t TSL2561_read_raw(void)
 	TSL2561_config();	// config every time in case there's a power lost
 	
 	TSL2561_power(1);
-	delay(TSL2561_INTEGRATION_TIME);
+	delay_ticks(4);  // 250 ticks/sec * 0.015 ~= 4 ticks
 	TSL2561_set_cmd(TSL2561_REG_DATA0LOW);
 	i2c_read(&raw, 2);
 	TSL2561_power(0);

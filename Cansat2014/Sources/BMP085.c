@@ -32,7 +32,7 @@ uint16_t BMP085_readTemp(){
 	i2c_write_no_stop(&sendReg,1);
 	sendReg = BMP085_READTEMPCMD;
 	i2c_write(&sendReg,1);
-	delay(5);
+	delay_ticks(2);  // 250 ticks/sec * 0.005 ~= 2 ticks
 	sendReg = BMP085_TEMPDATA;
 	i2c_write_no_stop(&sendReg,1);
 	i2c_read(&buffer,2);
@@ -47,7 +47,7 @@ uint32_t BMP085_readPressure(){
 	i2c_write_no_stop(&sendReg,1);
 	sendReg = BMP085_READPRESSURECMD | (BMP085_ULTRAHIGH_RES<<6);
 	i2c_write(&sendReg,1);
-	delay(26);
+	delay_ticks(7);  // 250 ticks/sec * 0.026 ~= 7 ticks
 	sendReg = BMP085_PRESSUREDATA;
 	i2c_write_no_stop(&sendReg,1);
 	i2c_read(&buffer,3);
