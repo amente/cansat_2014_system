@@ -68,13 +68,18 @@
 #include <util.h>
 
 
+void testSetup(void);
 void testLoop(void);
+
 void main(void)
 {	
 	sys_hw_init();
 	//sys_xbee_init();
 	//sys_app_banner();TSL2561_test()	
 	printf("\rCompiled on: %s %s\r", __DATE__, __TIME__);
+	
+	testSetup();
+	
 	for(;;)	
 	{	
 		testLoop();

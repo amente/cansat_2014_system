@@ -96,11 +96,11 @@
       </setting>
       <setting name="Task period">
         <id>task_period</id>
-        <value>50</value>
+        <value>250</value>
       </setting>
       <setting name="Real task period">
         <id>real_task_period</id>
-        <value>200 ms</value>
+        <value>1000 ms</value>
       </setting>
       <setting name="Enable Calendar">
         <id>enable_calendar</id>
@@ -217,6 +217,27 @@
           <selected_pin>19</selected_pin>
           <is_dynamic>false</is_dynamic>
         </pin_config>
+      </template>
+    </pin_distribution>
+  </component>
+  <component name="eep24xxx0">
+    <id>24xxx</id>
+    <settings>
+      <setting name="I2C Slave Sub-Address">
+        <id>slave_subaddress</id>
+        <value>0</value>
+      </setting>
+      <setting name="EEPROM Address bytes">
+        <id>address_bytes</id>
+        <value>2</value>
+      </setting>
+      <setting name="EEPROM Page Size">
+        <id>period</id>
+        <value>64</value>
+      </setting>
+    </settings>
+    <pin_distribution>
+      <template name="Default template" locked="false">
       </template>
     </pin_distribution>
   </component>
