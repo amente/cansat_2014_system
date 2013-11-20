@@ -17,7 +17,7 @@ bool_t DS1307_test(void)
 	reg = DS1307_REG_CTRL;
 	
 	i2c_set_addr(DS1307_ADDR);
-	i2c_write_no_stop(&reg, 1);
+	i2c_write_no_stop(&reg, sizeof(reg));
 	i2c_read(&buf, 2);	
 	
 	return DS1307_REG_CTRL_DEF == (buf >> 8);	
@@ -58,8 +58,33 @@ uint16_t DS1307_get_secs(void)
 	reg = DS1307_REG_SEC;
 	
 	i2c_set_addr(DS1307_ADDR);
-	i2c_write_no_stop(&reg, 1);
+	i2c_write_no_stop(&reg, sizeof(reg));
 	i2c_read(&time, 3);  // This will read in the secs, min and hours in that order
 		
 	return DS1307_BCD_to_sec(time);
+}
+
+int DS1307_read_RAM(uint8_t addr, void* buf, uint16_t len)
+{
+	if ( (addr < 0x08) || (addr + len > 0x3F + 1) )
+		 return -EINVAL; 		/* Return invalid arguments for out of range addr */
+	
+	i2c_set_addr(DS1307_ADDR);
+	i2c_write_no_stop(&addr, sizeof(addr));
+	
+	return i2c_read(buf, len);
+}
+
+int DS1307_write_RAM(uint8_t addr, void* buf, uint16_t len)
+{
+	uint8_t data[56+1];  // TODO: can I do better than this?
+	
+	if ( (addr < 0x08) || (addr + len > 0x3F + 1) )
+		 return -EINVAL; 		/* Return invalid arguments for out of range addr */
+	
+	data[0] = addr;
+	memcpy(&data[1], buf, len);
+	
+	i2c_set_addr(DS1307_ADDR);
+	return i2c_write(&data, len+1);
 }
