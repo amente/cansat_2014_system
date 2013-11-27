@@ -71,9 +71,11 @@ void testSetup(void);
 void testLoop(void);
 
 #ifdef irq0_irq
+static uint8_t got_irq = 0;
 void irq0_irq(void)
 {
-    /* IRQ trigged @ 1Hz but nothing to do here */
+    /* IRQ triggered @ 1Hz */
+	got_irq = 1;
 }
 #endif
 
@@ -95,8 +97,9 @@ void main_loop(void)
 void main_stop_start(void)
 {
 	pm_set_radio_mode(PM_MODE_STOP);
-	asm stop;
-	asm stop;  // Debounce...
+	while(!got_irq)
+		asm stop;  // debounce; stop until there's an actual IRQ
+	got_irq = 0;
 	pm_set_radio_mode(PM_MODE_RUN);
 }
 
@@ -108,7 +111,7 @@ void main(void)
 	sys_xbee_init();
 	//sys_app_banner();
 
-#ifdef __debug__
+#ifdef __DEBUG__
 	printf("\rCompiled on: %s %s\r", __DATE__, __TIME__);
 #endif
 
