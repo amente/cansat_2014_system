@@ -95,22 +95,6 @@
 							<tool id="hc08.toolchain.preprocessor.1675977760" name="HCS08 Preprocessor" superClass="hc08.toolchain.preprocessor.2049809223"/>
 						</toolChain>
 					</folderInfo>
-					<folderInfo id="toolchain.config.hcs08.release.974252938.852045762.545556202" name="/" resourcePath="payload">
-						<toolChain id="hcs08.project.toolchain.381206792" name="HCS08 Toolchain" superClass="hcs08.project.toolchain" unusedChildren="">
-							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="hc08.toolchain.platform" name="HC08 Targetplatform" superClass="hc08.toolchain.platform"/>
-							<tool id="s08.toolchain.decoder.2051006666" name="S08 Disassembler" superClass="s08.toolchain.decoder.1086227504"/>
-							<tool id="hc08.toolchain.linker.870915539" name="S08 Linker" superClass="hc08.toolchain.linker.1131020750"/>
-							<tool id="hc08.toolchain.burner.1612959605" name="S08 Burner" superClass="hc08.toolchain.burner.468921835"/>
-							<tool id="hcs08.toolchain.compiler.1179607377" name="HCS08 Compiler" superClass="hcs08.toolchain.compiler.364618793">
-								<inputType id="hcs08.toolchain.compiler.base.input.c.2043397895" name="HCS08 Compiler C Input" superClass="hcs08.toolchain.compiler.base.input.c"/>
-								<inputType id="hcs08.toolchain.compiler.base.input.cpp.1234363096" name="HCS08 Compiler CPP Input" superClass="hcs08.toolchain.compiler.base.input.cpp"/>
-							</tool>
-							<tool id="hc08.toolchain.assembler.1642738735" name="HCS08 Assembler" superClass="hc08.toolchain.assembler.819037777">
-								<inputType id="hc08.toolchain.assembler.base.input.27777599" name="HC08 Assembler Input" superClass="hc08.toolchain.assembler.base.input"/>
-							</tool>
-							<tool id="hc08.toolchain.preprocessor.1030730613" name="HCS08 Preprocessor" superClass="hc08.toolchain.preprocessor.2049809223"/>
-						</toolChain>
-					</folderInfo>
 					<fileInfo id="toolchain.config.hcs08.release.974252938.852045762.1070741458" name="system.c" rcbsApplicability="disable" resourcePath="Sources/cpu/system.c" toolsToInvoke="hcs08.toolchain.compiler.364618793.821936875">
 						<tool id="hcs08.toolchain.compiler.364618793.821936875" name="HCS08 Compiler" superClass="hcs08.toolchain.compiler.364618793">
 							<option id="hc08.toolchain.compiler.base.general.otherflags.475956575" name="Other flags" superClass="hc08.toolchain.compiler.base.general.otherflags" value="-WmsgSd3303 -WmsgSd20000 -WmsgSd20001" valueType="string"/>

@@ -24,7 +24,7 @@ bool_t DS1307_test(void)
 
 void DS1307_reset(void)
 {
-	const uint8_t ZERO[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };  // First 0 for the reg addr follow by 8 more to zero the RTC and set HTL to false (start the clock)
+	const uint8_t ZERO[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0x10 };  // First 0 for the reg addr follow by 8 more to zero the RTC and set HTL to false (start the clock)
 	i2c_set_addr(DS1307_ADDR);
 	i2c_write(&ZERO, 1+8);
 }

@@ -65,6 +65,18 @@
 #define ENABLE_ADC_XPIN_20
 #define adc0                            XPIN_20
 
+/* irq0 component */
+#define ENABLE_GPIO_IRQ_XPIN_11
+#define irq0                            XPIN_11
+#define irq0_irq                        gpio_irq_handler_xpin_11
+#define GPIO_CFG_IRQ_MODE_11            GPIO_CFG_EDGE_IRQ
+#define GPIO_IRQ_LEVEL_EDGE_11          GPIO_IRQ_EDGE_FALL
+#define GPIO_IRQ_CFG_PULL_11            GPIO_IRQ_CFG_PULL_HIGH
+#define orPD11                          shift_xpin_11
+#define andPD11                         ~0
+#define orPR11                          shift_xpin_11
+#define andPR11                         ~0
+
 /* Used pins macros */
 #define XPIN_13_USED
 #define XPIN_9_USED
@@ -74,6 +86,7 @@
 #define XPIN_7_USED
 #define XPIN_19_USED
 #define XPIN_20_USED
+#define XPIN_11_USED
 
 
 /* Components includes */
@@ -90,5 +103,6 @@
 #include <i2c.h>
 #include <24xxx.h>
 #include <adc.h>
+#include <gpios.h>
 
 #endif /* __XBEE_CONFIG_H_ */

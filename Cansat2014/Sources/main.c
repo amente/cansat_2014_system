@@ -39,7 +39,7 @@
  *   XPIN8 = <<UNUSED>>
  *   XPIN9 = power_management0 [Sleep Request Pin]
  *   XPIN10 = GND
- *   XPIN11 = <<UNUSED>>
+ *   XPIN11 = irq0 [IRQ Pin]
  *   XPIN12 = <<UNUSED>>
  *   XPIN13 = power_management0 [On Sleep Pin]
  *   XPIN14 = VCC REF
@@ -70,6 +70,21 @@
 void testSetup(void);
 void testLoop(void);
 
+#ifdef irq0_irq
+void irq0_irq(void)
+{
+    /* IRQ trigged @ 1Hz but nothing to do here */
+}
+#endif
+
+#pragma INLINE
+void main_setup(void)
+{
+	SPMSC2 = 2;  // Enable STOP3 MODE
+	if(DS1307_config())
+		CANSAT_UPTIME = DS1307_get_secs();
+}
+
 #pragma INLINE
 void main_loop(void)
 {
@@ -77,18 +92,12 @@ void main_loop(void)
 }
 
 #pragma INLINE
-void enter_stop(void)
+void main_stop_start(void)
 {
-	SPMSC2 = 2;  						// Enable STOP3 MODE
-	pm_set_radio_mode(PM_MODE_STOP); 	// put the xbee radio to sleep
-	RTCSC =   RTCSC_RTIE_MASK			// Use LPO, enable interrupt and set prescaler to 1000
-			| RTCSC_RTCPS0_MASK
-			| RTCSC_RTCPS1_MASK
-			| RTCSC_RTCPS2_MASK
-			| RTCSC_RTCPS3_MASK;
-	RTCMOD = 0;							// Set timout to 1s
-	asm stop;							// STOP
-	rtc_config();						// Reconfig the RTC
+	pm_set_radio_mode(PM_MODE_STOP);
+	asm stop;
+	asm stop;  // Debounce...
+	pm_set_radio_mode(PM_MODE_RUN);
 }
 
 uint16_t CANSAT_UPTIME = 0;
@@ -98,20 +107,22 @@ void main(void)
 	sys_hw_init();
 	sys_xbee_init();
 	//sys_app_banner();
-	
-	printf("\rCompiled on: %s %s\r", __DATE__, __TIME__);
 
-	if(DS1307_config())
-		CANSAT_UPTIME = DS1307_get_secs();
+#ifdef __debug__
+	printf("\rCompiled on: %s %s\r", __DATE__, __TIME__);
+#endif
+
+	main_setup();
 
 	for(;;)	
 	{	
 		main_loop();
+
 		sys_xbee_tick();
 		++CANSAT_UPTIME;	// increment @ 1HZ
 		CANSAT_PACKET_COUNT = CANSAT_UPTIME;  // for now...
 
-		enter_stop();
+		main_stop_start();
 		//sys_watchdog_reset();
 	}
 }

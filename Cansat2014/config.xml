@@ -300,4 +300,33 @@
       </template>
     </pin_distribution>
   </component>
+  <component name="irq0">
+    <id>gpio_irq</id>
+    <settings>
+      <setting name="Detection mode">
+        <id>activation_type</id>
+        <value>Edge</value>
+      </setting>
+      <setting name="Active Edge">
+        <id>edge_activation_mode</id>
+        <value>Fall</value>
+      </setting>
+      <setting name="Active Level">
+        <id>level_activation_mode</id>
+        <value>High level</value>
+      </setting>
+      <setting name="Pin Pull">
+        <id>irq_pull</id>
+        <value>High</value>
+      </setting>
+    </settings>
+    <pin_distribution>
+      <template name="Default template" locked="false">
+        <pin_config name="IRQ Pin">
+          <selected_pin>11</selected_pin>
+          <is_dynamic>false</is_dynamic>
+        </pin_config>
+      </template>
+    </pin_distribution>
+  </component>
 </configuration>
