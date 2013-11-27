@@ -38,16 +38,61 @@
       </template>
     </pin_distribution>
   </component>
+  <component name="power_management0">
+    <id>power_management</id>
+    <settings>
+      <setting name="Power management mode (SM)">
+        <id>pm_mode</id>
+        <value>Pin sleep</value>
+      </setting>
+      <setting name="Sleep options (SO)">
+        <id>cyclic_sleep_so</id>
+        <value>Short sleep</value>
+      </setting>
+      <setting name="Sleep period (SP)">
+        <id>cyclic_sleep_sp</id>
+        <value>5000</value>
+      </setting>
+      <setting name="Time before sleep (ST)">
+        <id>cyclic_sleep_st</id>
+        <value>500</value>
+      </setting>
+      <setting name="Number of sleep periods (SN)">
+        <id>cyclic_sleep_sn</id>
+        <value>65535</value>
+      </setting>
+      <setting name="Keep uptime">
+        <id>keep_uptime</id>
+        <value>False</value>
+      </setting>
+      <setting name="Enable Low-Voltage Detection">
+        <id>lvd_sleep</id>
+        <value>False</value>
+      </setting>
+    </settings>
+    <pin_distribution>
+      <template name="Default template" locked="false">
+        <pin_config name="On Sleep Pin">
+          <selected_pin>13</selected_pin>
+          <is_dynamic>false</is_dynamic>
+        </pin_config>
+        <pin_config name="Sleep Request Pin">
+          <selected_pin>9</selected_pin>
+          <is_dynamic>false</is_dynamic>
+        </pin_config>
+      </template>
+    </pin_distribution>
+  </component>
   <component name="special0">
     <id>special_pins</id>
     <settings>
       <setting name="Association LED Pin">
         <id>association_pin</id>
-        <value>Enabled</value>
+        <value>Disabled</value>
       </setting>
       <setting name="Commissioning Pin">
         <id>commissioning_pin</id>
-        <value>Enabled</value>
+        <value>Disabled</value>
       </setting>
       <setting name="Reset Pin">
         <id>reset_pin</id>
@@ -55,33 +100,17 @@
       </setting>
       <setting name="BDM Pin">
         <id>bdm_pin</id>
-        <value>Enabled</value>
+        <value>Disabled</value>
       </setting>
       <setting name="RSSI PWM Pin">
         <id>rssi_pwm_pin</id>
-        <value>Enabled</value>
+        <value>Disabled</value>
       </setting>
     </settings>
     <pin_distribution>
       <template name="Default template" locked="false">
-        <pin_config name="Association Pin">
-          <selected_pin>15</selected_pin>
-          <is_dynamic>false</is_dynamic>
-        </pin_config>
-        <pin_config name="Commissioning Pin">
-          <selected_pin>20</selected_pin>
-          <is_dynamic>false</is_dynamic>
-        </pin_config>
         <pin_config name="Reset Pin">
           <selected_pin>5</selected_pin>
-          <is_dynamic>false</is_dynamic>
-        </pin_config>
-        <pin_config name="BKGD Pin">
-          <selected_pin>8</selected_pin>
-          <is_dynamic>false</is_dynamic>
-        </pin_config>
-        <pin_config name="RSSI PWM Pin">
-          <selected_pin>6</selected_pin>
           <is_dynamic>false</is_dynamic>
         </pin_config>
       </template>
@@ -238,6 +267,36 @@
     </settings>
     <pin_distribution>
       <template name="Default template" locked="false">
+      </template>
+    </pin_distribution>
+  </component>
+  <component name="adc_config0">
+    <id>adc_configuration</id>
+    <settings>
+      <setting name="Conversion Mode">
+        <id>conversion_mode</id>
+        <value>12 bits</value>
+      </setting>
+      <setting name="Optimization">
+        <id>optimization</id>
+        <value>Power</value>
+      </setting>
+    </settings>
+    <pin_distribution>
+      <template name="Default template" locked="false">
+      </template>
+    </pin_distribution>
+  </component>
+  <component name="adc0">
+    <id>adc_component</id>
+    <settings>
+    </settings>
+    <pin_distribution>
+      <template name="Default template" locked="false">
+        <pin_config name="ADC Pin">
+          <selected_pin>20</selected_pin>
+          <is_dynamic>false</is_dynamic>
+        </pin_config>
       </template>
     </pin_distribution>
   </component>

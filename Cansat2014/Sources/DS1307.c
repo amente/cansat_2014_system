@@ -11,23 +11,35 @@
 static uint16_t	buf;
 static uint8_t	reg;
 
-
 bool_t DS1307_test(void)
 {
 	reg = DS1307_REG_CTRL;
 	
 	i2c_set_addr(DS1307_ADDR);
 	i2c_write_no_stop(&reg, sizeof(reg));
-	i2c_read(&buf, 2);	
+	i2c_read(&buf, sizeof(buf));	
 	
 	return DS1307_REG_CTRL_DEF == (buf >> 8);	
 }
 
-void DS1307_enable(void)
+void DS1307_reset(void)
 {
 	const uint8_t ZERO[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };  // First 0 for the reg addr follow by 8 more to zero the RTC and set HTL to false (start the clock)
 	i2c_set_addr(DS1307_ADDR);
-	i2c_write(&ZERO, 1+8);  
+	i2c_write(&ZERO, 1+8);
+}
+
+uint8_t DS1307_config(void)
+{
+	reg = 0;
+	i2c_set_addr(DS1307_ADDR);
+	i2c_write_no_stop(&reg, sizeof(reg));
+	i2c_read(&buf, sizeof(buf));
+	if (buf & 0x8000)
+		{ DS1307_reset(); return 0; } // Only reset/enable RTC if it's not enabled
+
+	//else
+	return 1;  // Returns non-zero if RTC is already enabled
 }
 
 static uint16_t DS1307_BCD_to_sec(uint32_t time)
@@ -54,13 +66,14 @@ static uint16_t DS1307_BCD_to_sec(uint32_t time)
 
 uint16_t DS1307_get_secs(void)
 {
-	uint32_t time;
+	uint32_t time = 0;
+	
 	reg = DS1307_REG_SEC;
 	
 	i2c_set_addr(DS1307_ADDR);
 	i2c_write_no_stop(&reg, sizeof(reg));
 	i2c_read(&time, 3);  // This will read in the secs, min and hours in that order
-		
+
 	return DS1307_BCD_to_sec(time);
 }
 
@@ -77,7 +90,7 @@ int DS1307_read_RAM(uint8_t addr, void* buf, uint16_t len)
 
 int DS1307_write_RAM(uint8_t addr, void* buf, uint16_t len)
 {
-	uint8_t data[56+1];  // TODO: can I do better than this?
+	uint8_t data[56+1];  // TODO: can I do better than this? Maybe I don't have to use memcpy...
 	
 	if ( (addr < 0x08) || (addr + len > 0x3F + 1) )
 		 return -EINVAL; 		/* Return invalid arguments for out of range addr */

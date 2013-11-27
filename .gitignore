@@ -12,6 +12,7 @@
 bin/
 payload/
 container/
+debug/
 
 test.c
 

@@ -34,21 +34,21 @@
  *   XPIN3 = uart0 [RX Pin]
  *   XPIN4 = <<UNUSED>>
  *   XPIN5 = special0 [Reset Pin]
- *   XPIN6 = special0 [RSSI PWM Pin]
+ *   XPIN6 = <<UNUSED>>
  *   XPIN7 = i2c0 [SDA Pin]
- *   XPIN8 = special0 [BKGD Pin]
- *   XPIN9 = <<UNUSED>>
+ *   XPIN8 = <<UNUSED>>
+ *   XPIN9 = power_management0 [Sleep Request Pin]
  *   XPIN10 = GND
  *   XPIN11 = <<UNUSED>>
  *   XPIN12 = <<UNUSED>>
- *   XPIN13 = <<UNUSED>>
+ *   XPIN13 = power_management0 [On Sleep Pin]
  *   XPIN14 = VCC REF
- *   XPIN15 = special0 [Association Pin]
+ *   XPIN15 = <<UNUSED>>
  *   XPIN16 = <<UNUSED>>
  *   XPIN17 = <<UNUSED>>
  *   XPIN18 = <<UNUSED>>
  *   XPIN19 = i2c0 [SCL Pin]
- *   XPIN20 = special0 [Commissioning Pin]
+ *   XPIN20 = adc0 [ADC Pin]
  *
  ************************************/
 
@@ -67,23 +67,50 @@
 #include <drivers.h>
 #include <util.h>
 
-
 void testSetup(void);
 void testLoop(void);
 
+#pragma INLINE
+void main_loop(void)
+{
+	testLoop();
+}
+
+#pragma INLINE
+void enter_stop(void)
+{
+	SPMSC2 = 2;  						// Enable STOP3 MODE
+	pm_set_radio_mode(PM_MODE_STOP); 	// put the xbee radio to sleep
+	RTCSC =   RTCSC_RTIE_MASK			// Use LPO, enable interrupt and set prescaler to 1000
+			| RTCSC_RTCPS0_MASK
+			| RTCSC_RTCPS1_MASK
+			| RTCSC_RTCPS2_MASK
+			| RTCSC_RTCPS3_MASK;
+	RTCMOD = 0;							// Set timout to 1s
+	asm stop;							// STOP
+	rtc_config();						// Reconfig the RTC
+}
+
+uint16_t CANSAT_UPTIME = 0;
+uint16_t CANSAT_PACKET_COUNT  = 0;
 void main(void)
 {	
 	sys_hw_init();
-	//sys_xbee_init();
-	//sys_app_banner();TSL2561_test()	
+	sys_xbee_init();
+	//sys_app_banner();
+	
 	printf("\rCompiled on: %s %s\r", __DATE__, __TIME__);
-	
-	testSetup();
-	
+	if(!DS1307_config())
+		CANSAT_UPTIME = DS1307_get_secs();
+
 	for(;;)	
 	{	
-		testLoop();
-		//sys_watchdog_reset();:wq		
-		//sys_xbee_tick();
+		main_loop();
+		sys_xbee_tick();
+		++CANSAT_UPTIME;	// increment @ 1HZ
+		CANSAT_PACKET_COUNT = CANSAT_UPTIME;  // for now...
+
+		enter_stop();
+		//sys_watchdog_reset();
 	}
 }

@@ -9,6 +9,8 @@
 #include <TSL2561.h>
 #include <util.h>
 
+static uint8_t TSL2561_isConfiged = 0;
+
 static int TSL2561_set_cmd(uint8_t reg)
 {
 	i2c_set_addr(TSL2561_ADDR);
@@ -23,7 +25,6 @@ bool_t TSL2561_test(void)
 	i2c_read(&id, 2);
 	return TSL2561_ID == (id >> 8);	
 }
-
 
 static int TSL2561_power(bool_t state)  // 1 = ON, 0= OFF
 {
@@ -42,12 +43,16 @@ static void TSL2561_config(void)
 
 uint16_t TSL2561_read_raw(void)
 {
-	uint16_t raw = -1;
+	uint16_t raw = 0;
 	
-	TSL2561_config();	// config every time in case there's a power lost
+	if (!TSL2561_isConfiged)
+	{
+		TSL2561_config();
+		TSL2561_isConfiged = 1;
+	}
 	
 	TSL2561_power(1);
-	delay_ticks(4);  // 250 ticks/sec * 0.015 ~= 4 ticks
+	delay(TSL2561_INTEGRATION_TIME);
 	TSL2561_set_cmd(TSL2561_REG_DATA0LOW);
 	i2c_read(&raw, 2);
 	TSL2561_power(0);

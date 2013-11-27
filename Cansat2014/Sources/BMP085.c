@@ -19,42 +19,45 @@ bool_t BMP085_test(void)
 {				
 	i2c_set_addr(BMP085_I2CADDR);		
 	sendReg = BMP085_CONTROL;	
-	i2c_write_no_stop(&sendReg,1);
+	i2c_write_no_stop(&sendReg, sizeof(sendReg));
 	i2c_read(&buffer,2);
 	
 	return BMP085_CHIP_ID == (buffer >> 24);
 }
 
-uint16_t BMP085_readTemp(){
+uint16_t BMP085_readTemp()
+{	return 0;
+	buffer = 0;
 	
 	sendReg = BMP085_CONTROL;						
 	i2c_set_addr(BMP085_I2CADDR);		
-	i2c_write_no_stop(&sendReg,1);
+	i2c_write_no_stop(&sendReg, sizeof(sendReg));
 	sendReg = BMP085_READTEMPCMD;
-	i2c_write(&sendReg,1);
-	delay_ticks(2);  // 250 ticks/sec * 0.005 ~= 2 ticks
+	i2c_write(&sendReg, sizeof(sendReg));
+	delay(5);
 	sendReg = BMP085_TEMPDATA;
-	i2c_write_no_stop(&sendReg,1);
+	i2c_write_no_stop(&sendReg, sizeof(sendReg));
 	i2c_read(&buffer,2);
 	
 	return buffer >> 16;
 }
 
-uint32_t BMP085_readPressure(){
+uint32_t BMP085_readPressure()
+{	return 0;
+	buffer = 0;
 	
 	sendReg = BMP085_CONTROL;
 	i2c_set_addr(BMP085_I2CADDR);		
-	i2c_write_no_stop(&sendReg,1);
+	i2c_write_no_stop(&sendReg, sizeof(sendReg));
 	sendReg = BMP085_READPRESSURECMD | (BMP085_ULTRAHIGH_RES<<6);
-	i2c_write(&sendReg,1);
-	delay_ticks(7);  // 250 ticks/sec * 0.026 ~= 7 ticks
+	i2c_write(&sendReg, sizeof(sendReg));
+	delay(26);
 	sendReg = BMP085_PRESSUREDATA;
-	i2c_write_no_stop(&sendReg,1);
-	i2c_read(&buffer,3);
+	i2c_write_no_stop(&sendReg, sizeof(sendReg));
+	i2c_read(&buffer, 3);
 	
     return buffer>>(8-BMP085_ULTRAHIGH_RES);	
 }
-
 
 void BMP085_printCalibrationData(){
 	
@@ -63,7 +66,7 @@ void BMP085_printCalibrationData(){
 		uint8_t sendReg  = 0xAA;
 		
 		i2c_set_addr(BMP085_I2CADDR);	
-		i2c_write_no_stop(&sendReg,1);	
+		i2c_write_no_stop(&sendReg, 1);	
 		i2c_read(&ac1,2); sendReg+=2;
 		i2c_write_no_stop(&sendReg,1);
 		i2c_read(&ac2,2);sendReg+=2;
