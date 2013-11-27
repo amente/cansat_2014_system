@@ -100,6 +100,7 @@ void main(void)
 	//sys_app_banner();
 	
 	printf("\rCompiled on: %s %s\r", __DATE__, __TIME__);
+
 	if(DS1307_config())
 		CANSAT_UPTIME = DS1307_get_secs();
 
