@@ -19,12 +19,16 @@
 #define SYS_CFG_CLK_48_MHz
 #define SYS_CFG_BUSCLK_SYSCLK_DIV2
 
+/* power_management0 component */
+#define ENABLE_POWER_MANAGEMENT
+#define ENABLE_SLEEP_RQ_XPIN_9
+#define ENABLE_ON_SLEEP_XPIN_13
+#define XBEE_ATCMD_PARAM_SM             1
+#define POWER_MANAGEMENT_KEEP_UPTIME    0
+#define POWER_MANAGEMENT_ENABLE_LVD     0
+
 /* special0 component */
-#define ENABLE_ASSOCIATION_LED_XPIN_15
-#define ENABLE_COMMISSIONING_XPIN_20
 #define ENABLE_RESET_PIN_XPIN_5
-#define ENABLE_BKGD_PIN_XPIN_8
-#define ENABLE_RSSI_PWM_XPIN_6
 
 /* rtc0 component */
 #define ENABLE_RTC
@@ -52,21 +56,30 @@
 #define EEPROM_24XXX_ADDRESS_BYTES_0    2
 #define EEPROM_24XXX_PAGE_SIZE_0        64
 
+/* adc_config0 component */
+#define ENABLE_ADC
+#define ADC_CFG_MODE_BITS               ADC_CFG_MODE_12BIT
+#define ADC_CFG_OPTIMIZE                ADC_CFG_OPTIMIZE_FOR_POWER
+
+/* adc0 component */
+#define ENABLE_ADC_XPIN_20
+#define adc0                            XPIN_20
+
 /* Used pins macros */
-#define XPIN_15_USED
-#define XPIN_20_USED
+#define XPIN_13_USED
+#define XPIN_9_USED
 #define XPIN_5_USED
-#define XPIN_8_USED
-#define XPIN_6_USED
 #define XPIN_3_USED
 #define XPIN_2_USED
 #define XPIN_7_USED
 #define XPIN_19_USED
+#define XPIN_20_USED
 
 
 /* Components includes */
 #include <custom.h>
 #include <system.h>
+#include <pm.h>
 #include <rtc.h>
 #include <pan_init.h>
 #include <endpoints.h>
@@ -76,5 +89,6 @@
 #include <uart.h>
 #include <i2c.h>
 #include <24xxx.h>
+#include <adc.h>
 
 #endif /* __XBEE_CONFIG_H_ */

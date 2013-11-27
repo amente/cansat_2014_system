@@ -11,5 +11,7 @@
 #include <BMP085.h>
 #include <TSL2561.h>
 #include <DS1307.h>
+#include <24xxx.h>
+#include <vadc.h>
 
 #endif /* DRIVERS_H_ */

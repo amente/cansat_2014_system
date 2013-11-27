@@ -22,7 +22,8 @@
 
 
 bool_t DS1307_test(void);
-void DS1307_enable(void);
+void DS1307_reset(void);
+uint8_t DS1307_config(void);
 uint16_t DS1307_get_secs(void);
 int DS1307_read_RAM(uint8_t addr, void* buf, uint16_t len);
 int DS1307_write_RAM(uint8_t addr, void* buf, uint16_t len);
