@@ -14,7 +14,8 @@
 #define BMP085_CHIP_ID 0x55
 
 
-#define BMP085_ULTRAHIGH_RES  3
+#define BMP085_PRESSURE_OSS		0
+#define BMP085_SAMPLE_DELAY		5
 
 #define BMP085_CONTROL           0xF4 
 #define BMP085_TEMPDATA          0xF6
@@ -24,7 +25,7 @@
 
 bool_t BMP085_test(void);
 uint16_t BMP085_readTemp(void);
-uint32_t BMP085_readPressure(void);
+uint16_t BMP085_readPressure(void);
 void BMP085_printCalibrationData(void);
 
 #endif

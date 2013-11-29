@@ -97,8 +97,9 @@ void main_loop(void)
 void main_stop_start(void)
 {
 	pm_set_radio_mode(PM_MODE_STOP);
-	while(!got_irq)
-		asm stop;  // debounce; stop until there's an actual IRQ
+	do asm stop;
+	while(!got_irq);	// debounce; stop until there's an actual IRQ
+	++CANSAT_UPTIME;	// increment @ 1HZ
 	got_irq = 0;
 	pm_set_radio_mode(PM_MODE_RUN);
 }
@@ -122,8 +123,7 @@ void main(void)
 		main_loop();
 
 		sys_xbee_tick();
-		++CANSAT_UPTIME;	// increment @ 1HZ
-		CANSAT_PACKET_COUNT = CANSAT_UPTIME;  // for now...
+		CANSAT_PACKET_COUNT = CANSAT_UPTIME+1;  // for now...
 
 		main_stop_start();
 		//sys_watchdog_reset();

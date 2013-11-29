@@ -12,51 +12,49 @@
 #include <BMP085.h>
 #include <util.h>
 
-static uint32_t buffer;
-static uint8_t sendReg;
+static uint16_t buffer;
+static uint8_t data[2] = { BMP085_CONTROL, 0 };
 
 bool_t BMP085_test(void)
-{				
+{
+	buffer = 0;
+
 	i2c_set_addr(BMP085_I2CADDR);		
-	sendReg = BMP085_CONTROL;	
-	i2c_write_no_stop(&sendReg, sizeof(sendReg));
-	i2c_read(&buffer,2);
+	data[1] = BMP085_CHIP_REG;
+	i2c_write_no_stop(&data[1], 1);
+	i2c_read(&buffer, sizeof(buffer));
 	
-	return BMP085_CHIP_ID == (buffer >> 24);
+	return BMP085_CHIP_ID == (buffer >> 8);
 }
 
 uint16_t BMP085_readTemp()
-{	return 0;
+{
 	buffer = 0;
 	
-	sendReg = BMP085_CONTROL;						
-	i2c_set_addr(BMP085_I2CADDR);		
-	i2c_write_no_stop(&sendReg, sizeof(sendReg));
-	sendReg = BMP085_READTEMPCMD;
-	i2c_write(&sendReg, sizeof(sendReg));
-	delay(5);
-	sendReg = BMP085_TEMPDATA;
-	i2c_write_no_stop(&sendReg, sizeof(sendReg));
-	i2c_read(&buffer,2);
+	i2c_set_addr(BMP085_I2CADDR);
+	data[1] = BMP085_READTEMPCMD;
+	i2c_write(&data, 2);
+	delay(BMP085_SAMPLE_DELAY);
+	data[1] = BMP085_TEMPDATA;
+	i2c_write_no_stop(&data[1], 1);
+	i2c_read(&buffer, sizeof(buffer));
 	
-	return buffer >> 16;
+	return buffer;
 }
 
-uint32_t BMP085_readPressure()
-{	return 0;
+uint16_t BMP085_readPressure()
+{
 	buffer = 0;
 	
-	sendReg = BMP085_CONTROL;
 	i2c_set_addr(BMP085_I2CADDR);		
-	i2c_write_no_stop(&sendReg, sizeof(sendReg));
-	sendReg = BMP085_READPRESSURECMD | (BMP085_ULTRAHIGH_RES<<6);
-	i2c_write(&sendReg, sizeof(sendReg));
-	delay(26);
-	sendReg = BMP085_PRESSUREDATA;
-	i2c_write_no_stop(&sendReg, sizeof(sendReg));
-	i2c_read(&buffer, 3);
+	data[1] = BMP085_READPRESSURECMD | (BMP085_PRESSURE_OSS<<6);
+	i2c_write(&data, 2);
+	delay(BMP085_SAMPLE_DELAY);
+	data[1] = BMP085_PRESSUREDATA;
+	i2c_write_no_stop(&data[1], 1);
+	i2c_read(&buffer, sizeof(buffer));
 	
-    return buffer>>(8-BMP085_ULTRAHIGH_RES);	
+    return buffer;
 }
 
 void BMP085_printCalibrationData(){
