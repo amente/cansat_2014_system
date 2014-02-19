@@ -64,11 +64,41 @@
 #include <xbee_config.h>
 #include <types.h>
 #include <ctype.h>
+#include <stdlib.h>
 #include <drivers.h>
 #include <util.h>
+#include <BMP085.h>
+#include <TSL2561.h>
+#include <i2c.h>
+#include <xbee/serial.h>
 
-void testSetup(void);
-void testLoop(void);
+// Team ID is always the first 2 bits in a packet
+#define TEAMID 0x2305
+
+// Indices of other values in the packet send buffer
+#define PACKET_COUNT_IDX 1
+#define MISSION_TIME_IDX 2
+#define ALT_IDX 3
+#define TEMP_IDX 4
+#define SOURCE_VOLT_IDx 5
+#define LUX_IDX 6
+
+#define PACKET_SIZE 14 // 14 Bytes in total 7*16 bits
+
+// The send buffer
+static uint16_t send_buf[PACKET_SIZE] = {TEAMID,0,0,0,0,0,0};
+
+uint16_t CANSAT_UPTIME = 0;
+uint16_t CANSAT_PACKET_COUNT  = 0;
+
+void send_packet(){	
+	send_buf[ALT_IDX] = BMP085_readPressure();
+	send_buf[TEMP_IDX] = BMP085_readTemp();	
+	
+	CANSAT_PACKET_COUNT++;
+	send_buf[PACKET_COUNT_IDX] =CANSAT_PACKET_COUNT;
+	xbee_ser_write(&EMBER_SERIAL_PORT, &send_buf,PACKET_SIZE);	
+}
 
 #ifdef irq0_irq
 static uint8_t got_irq = 0;
@@ -82,6 +112,8 @@ void irq0_irq(void)
 #pragma INLINE
 void main_setup(void)
 {
+	// Set xbee baud rate
+	xbee_ser_baudrate(&EMBER_SERIAL_PORT, 9600);	
 	SPMSC2 = 2;  // Enable STOP3 MODE
 	if(DS1307_config())
 		CANSAT_UPTIME = DS1307_get_secs();
@@ -90,7 +122,8 @@ void main_setup(void)
 #pragma INLINE
 void main_loop(void)
 {
-	testLoop();
+	send_packet();
+	delay(500);
 }
 
 #pragma INLINE
@@ -104,13 +137,12 @@ void main_stop_start(void)
 	pm_set_radio_mode(PM_MODE_RUN);
 }
 
-uint16_t CANSAT_UPTIME = 0;
-uint16_t CANSAT_PACKET_COUNT  = 0;
+
 void main(void)
 {	
 	sys_hw_init();
 	sys_xbee_init();
-	//sys_app_banner();
+	
 
 #ifdef __DEBUG__
 	printf("\rCompiled on: %s %s\r", __DATE__, __TIME__);
@@ -120,12 +152,10 @@ void main(void)
 
 	for(;;)	
 	{	
-		main_loop();
-
+		main_loop();		
 		sys_xbee_tick();
-		CANSAT_PACKET_COUNT = CANSAT_UPTIME+1;  // for now...
-
-		main_stop_start();
-		//sys_watchdog_reset();
+		//CANSAT_PACKET_COUNT = CANSAT_UPTIME+1;  // for now...		
+		//main_stop_start();
+		
 	}
 }
