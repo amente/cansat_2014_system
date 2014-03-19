@@ -109,22 +109,23 @@ void irq0_irq(void)
 }
 #endif
 
-#pragma INLINE
+char buf[20] = 0;
+
+//#pragma INLINE
 void main_setup(void)
 {
 	// Set xbee baud rate
 	xbee_ser_baudrate(&EMBER_SERIAL_PORT, 9600);	
 	SPMSC2 = 2;  // Enable STOP3 MODE
 	printf("Running...\n");
-	DS1338_config();
 	CANSAT_UPTIME = DS1338_get_secs();
 }
 
 #pragma INLINE
 void main_loop(void)
 {
-	send_packet();
-	delay(500);
+	//send_packet();
+	printf("TSL2561: %d\r", TSL2561_read_raw());
 }
 
 #pragma INLINE
@@ -156,7 +157,7 @@ void main(void)
 		main_loop();		
 		sys_xbee_tick();
 		//CANSAT_PACKET_COUNT = CANSAT_UPTIME+1;  // for now...		
-		//main_stop_start();
+		main_stop_start();
 		
 	}
 }

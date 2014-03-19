@@ -10,6 +10,7 @@
 
 static uint16_t	buf;
 static uint8_t	reg;
+static uint8_t DS1338_isConfiged = 0;
 
 bool_t DS1338_test(void)
 {
@@ -56,6 +57,12 @@ uint16_t DS1338_get_secs(void)
 {
 	uint32_t time = 0;
 	
+	if (!DS1338_isConfiged)
+	{
+		DS1338_config();
+		DS1338_isConfiged = 1;
+	}
+	
 	reg = DS1338_REG_SEC;
 	
 	i2c_set_addr(DS1338_ADDR);
@@ -67,6 +74,12 @@ uint16_t DS1338_get_secs(void)
 
 int DS1338_read_RAM(uint8_t addr, void* buf, uint16_t len)
 {
+	if (!DS1338_isConfiged)
+	{
+		DS1338_config();
+		DS1338_isConfiged = 1;
+	}
+	
 	if ( (addr < 0x08) || (addr + len > 0x3F + 1) )
 		 return -EINVAL; 		/* Return invalid arguments for out of range addr */
 	
@@ -79,6 +92,12 @@ int DS1338_read_RAM(uint8_t addr, void* buf, uint16_t len)
 int DS1338_write_RAM(uint8_t addr, void* buf, uint16_t len)
 {
 	uint8_t data[56+1];  // TODO: can I do better than this? Maybe I don't have to use memcpy...
+	
+	if (!DS1338_isConfiged)
+	{
+		DS1338_config();
+		DS1338_isConfiged = 1;
+	}
 	
 	if ( (addr < 0x08) || (addr + len > 0x3F + 1) )
 		 return -EINVAL; 		/* Return invalid arguments for out of range addr */
