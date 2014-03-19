@@ -10,7 +10,7 @@
 
 #include <BMP085.h>
 #include <TSL2561.h>
-#include <DS1307.h>
+#include <DS1338.h>
 #include <24xxx.h>
 #include <vadc.h>
 

@@ -115,8 +115,9 @@ void main_setup(void)
 	// Set xbee baud rate
 	xbee_ser_baudrate(&EMBER_SERIAL_PORT, 9600);	
 	SPMSC2 = 2;  // Enable STOP3 MODE
-	if(DS1307_config())
-		CANSAT_UPTIME = DS1307_get_secs();
+	printf("Running...\n");
+	DS1338_config();
+	CANSAT_UPTIME = DS1338_get_secs();
 }
 
 #pragma INLINE
@@ -141,7 +142,7 @@ void main_stop_start(void)
 void main(void)
 {	
 	sys_hw_init();
-	sys_xbee_init();
+	//sys_xbee_init();
 	
 
 #ifdef __DEBUG__

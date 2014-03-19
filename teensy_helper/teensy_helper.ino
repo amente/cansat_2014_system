@@ -2,6 +2,7 @@ usb_serial_class &Term = Serial;
 HardwareSerial &Xbee = Serial1;
 
 #define XBEE_RESET_PIN  4
+#define SERIAL_LED      13
 #define MAX_CMD_LEN     20
 #define XMODEM_TIMEOUT  5
 
@@ -14,6 +15,8 @@ void setup()
   Xbee.begin(9600);
 
   pinMode(XBEE_RESET_PIN, INPUT);
+  pinMode(SERIAL_LED, OUTPUT);
+  digitalWriteFast(SERIAL_LED, 0);
   pinMode(SCL, INPUT);
   pinMode(SDA, INPUT);
 }
@@ -29,6 +32,7 @@ void serialEvent()
 {
   if (Term.available())
   {
+    digitalWriteFast(SERIAL_LED, 1);
     char temp = Term.read();
     if ( (temp == ':' || cmd.length() ) && (millis() - last > XMODEM_TIMEOUT) )  // also checks for xmodem; threshold = 5ms
     {
@@ -62,9 +66,11 @@ void serialEvent()
 
   if (Xbee.available())
   {
+    digitalWriteFast(SERIAL_LED, 1);
     if (!cmd.length())
       Term.write(Xbee.read());  
   }
+  digitalWriteFast(SERIAL_LED, 0);
 }
 
 void parseCmd(String cmd)
