@@ -31,10 +31,9 @@
 							<builder autoBuildTarget="" buildPath="${ProjDirPath}/payload" cleanBuildTarget="" enableAutoBuild="false" enableCleanBuild="true" enabledIncrementalBuild="true" id="hc08.toolchain.builder.671320754" incrementalBuildTarget="" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="GNU Make Builder" parallelBuildOn="true" parallelBuildWorkspaceOn="true" parallelizationNumber="-1" superClass="hc08.toolchain.builder"/>
 							<tool id="hcs08.toolchain.compiler.364618793" name="HCS08 Compiler" superClass="hcs08.toolchain.compiler">
 								<option id="hc08.toolchain.compiler.base.preprocessor.defines.1465664298" name="Define preprocessor macros (-D)" superClass="hc08.toolchain.compiler.base.preprocessor.defines" valueType="definedSymbols">
-									<listOptionValue builtIn="false" value="__NO_FLOAT__"/>
 									<listOptionValue builtIn="false" value="APP_VERSION_STRING=&quot;Cansat2014_${BuildArtifactFileBaseName}&quot;"/>
+									<listOptionValue builtIn="false" value="__NO_FLOAT__"/>
 									<listOptionValue builtIn="false" value="__PAYLOAD__"/>
-									<listOptionValue builtIn="false" value="CONFIG_XBEE_DEBUG_BUILD"/>
 								</option>
 								<option id="hsc08.toolchain.compiler.base.input.i.2034606119" name="Include File Path (-I)" superClass="hsc08.toolchain.compiler.base.input.i" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Project_Headers&quot;"/>
@@ -51,6 +50,7 @@
 								<option id="hc08.toolchain.compiler.base.messages.WmsgNu.a.1930403080" name="Disable messages about include files (-WmsgNu=a)" superClass="hc08.toolchain.compiler.base.messages.WmsgNu.a" value="true" valueType="boolean"/>
 								<option id="hc08.toolchain.compiler.base.messages.WmsgNu.b.1779864634" name="Disable messages about reading files (-WmsgNu=b)" superClass="hc08.toolchain.compiler.base.messages.WmsgNu.b" value="true" valueType="boolean"/>
 								<option id="hc08.toolchain.compiler.base.messages.Wpd.973200605" name="Error for implicit parameter declaration (-Wpd) " superClass="hc08.toolchain.compiler.base.messages.Wpd" value="true" valueType="boolean"/>
+								<option id="hc08.toolchain.compiler.base.messages.W1.2133673567" name="Don't print INFORMATION messages (-W1)" superClass="hc08.toolchain.compiler.base.messages.W1" value="true" valueType="boolean"/>
 								<inputType id="hcs08.toolchain.compiler.base.input.c.447053618" name="HCS08 Compiler C Input" superClass="hcs08.toolchain.compiler.base.input.c"/>
 								<inputType id="hcs08.toolchain.compiler.base.input.cpp.16235581" name="HCS08 Compiler CPP Input" superClass="hcs08.toolchain.compiler.base.input.cpp"/>
 							</tool>
@@ -109,7 +109,7 @@
 						</tool>
 					</fileInfo>
 					<sourceEntries>
-						<entry excluding="Sources/drivers/i2c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="Sources/cpu/hwinit.c|Sources/drivers/i2c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -1497,10 +1497,9 @@
 							<builder buildPath="${ProjDirPath}/container" id="hc08.toolchain.builder.12516768" keepEnvironmentInBuildfile="false" name="GNU Make Builder" parallelBuildOn="true" parallelBuildWorkspaceOn="false" parallelizationNumber="-1" superClass="hc08.toolchain.builder"/>
 							<tool id="hcs08.toolchain.compiler.1532671476" name="HCS08 Compiler" superClass="hcs08.toolchain.compiler">
 								<option id="hc08.toolchain.compiler.base.preprocessor.defines.1891535560" name="Define preprocessor macros (-D)" superClass="hc08.toolchain.compiler.base.preprocessor.defines" valueType="definedSymbols">
-									<listOptionValue builtIn="false" value="__NO_FLOAT__"/>
 									<listOptionValue builtIn="false" value="__CONTAINER__"/>
+									<listOptionValue builtIn="false" value="__NO_FLOAT__"/>
 									<listOptionValue builtIn="false" value="APP_VERSION_STRING=&quot;Cansat2014_Container&quot;"/>
-									<listOptionValue builtIn="false" value="CONFIG_XBEE_DEBUG_BUILD"/>
 								</option>
 								<option id="hsc08.toolchain.compiler.base.input.i.1977505357" name="Include File Path (-I)" superClass="hsc08.toolchain.compiler.base.input.i" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Project_Headers&quot;"/>
@@ -1558,7 +1557,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="Sources/drivers/i2c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="Sources/cpu/hwinit.c|Sources/drivers/i2c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

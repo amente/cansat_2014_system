@@ -62,7 +62,6 @@
  * 
  */
 #include <xbee_config.h>
-#include <types.h>
 #include <ctype.h>
 #include <stdlib.h>
 #include <drivers.h>
@@ -117,15 +116,32 @@ void main_setup(void)
 	// Set xbee baud rate
 	xbee_ser_baudrate(&EMBER_SERIAL_PORT, 9600);	
 	SPMSC2 = 2;  // Enable STOP3 MODE
-	printf("Running...\n");
+	printf("Running... FP: %f\n", 3.14);
+	if (BMP085_test()) printf("Works!\r");
+	else printf("No Works!\r");
+	
+	BMP085_init();
+
+	
+	//while(1);
+	
+	
+	
+	
 	CANSAT_UPTIME = DS1338_get_secs();
 }
 
 #pragma INLINE
 void main_loop(void)
 {
+	long ut = BMP085_readTemp();
+	long up = BMP085_readPressure();
+	printf("Raw Temp: %ld Temp = %ld\r", ut,bmp085_convert_temperature(ut));
+	
+	printf("Raw Pressure: %ld Pressure = %lu\r",up, bmp085_calc_pressure(up,ut));
+	//delay(5);
 	//send_packet();
-	printf("TSL2561: %d\r", TSL2561_read_raw());
+	//printf("TSL2561: %d\r", TSL2561_read_raw());
 }
 
 #pragma INLINE
@@ -157,7 +173,7 @@ void main(void)
 		main_loop();		
 		sys_xbee_tick();
 		//CANSAT_PACKET_COUNT = CANSAT_UPTIME+1;  // for now...		
-		main_stop_start();
+		//main_stop_start();
 		
 	}
 }

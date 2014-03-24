@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2011 - 2012 Digi International Inc, All Rights Reserved.
+ * Copyright (C) 2011 Digi International Inc, All Rights Reserved.
  *
  * This software is provided as instructional material without charge 
  * by Digi International for use by its employees and customers
@@ -65,7 +65,6 @@
 
 #define i2c_set_rep_start()	IICC_RSTA = 1
 #define i2c_stop()			IICC = 0x80
-#define i2c_restore()		IICC &= ~0x80
 
 static uint8_t dev_addr;	/* device physical address */
 
@@ -81,6 +80,15 @@ static int i2c_start(void)
 	
 	IICC = 0b10110000;   /* + IIC TX and master */
 	return 0;
+}
+
+static void i2c_restore(void)
+{
+	/* Disable */
+	IICC = 0xc0;
+	  
+	/* ?? send a few clocks and start/stops*/
+	(void)i2c_config(0);
 }
 
 static int i2c_wr_byte(const uint8_t val)
@@ -124,7 +132,7 @@ static int i2c_r_byte(bool_t ack, bool_t first)
 	val = IICD;
 	/* Ack the transfer */
 	IICS_IICIF = 1;
-	/* TO_DO, Check RXACK? */
+	/* TODO, Check RXACK? */
 	
 	return (int)val;
 }
@@ -147,7 +155,7 @@ int i2c_config(uint8_t config)
 	/* Enable clocks for the i2c module */
 	SCGC1_IIC = 1;
 	
-	/* TO_DO, revisit and configure based on the bus clock */
+	/* TODO, revisit and configure based on the bus clock */
 	IICF = 0x8f;
 	
 	/* IICEN = 1, IICIE = 0, MST = 0... */
@@ -248,7 +256,6 @@ ssize_t i2c_read(void *buf, size_t len)
     if (ret < 0)
 		goto error_rd;
     *((uint8_t *)buf)++ = (uint8_t)ret;
-    
     read++;
     
     while ( (read < (len - 1) )) {
@@ -262,10 +269,13 @@ ssize_t i2c_read(void *buf, size_t len)
     ret = i2c_rd_byte(I2C_NACK);
 	if (ret < 0)
 		goto error_rd;
-	*((uint8_t *)buf)++ = (uint8_t)ret;
-	read++;
-	i2c_stop();
 
+	if (read < len) {
+		*((uint8_t *)buf)++ = (uint8_t)ret;
+		read++;
+	}
+	
+	i2c_stop();
 	return read;
 	
 error_rd:
@@ -273,3 +283,4 @@ error_rd:
 	return ret;
 }
 #endif /* ENABLE_I2C */
+

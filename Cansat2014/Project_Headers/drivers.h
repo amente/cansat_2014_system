@@ -8,6 +8,7 @@
 #ifndef DRIVERS_H_
 #define DRIVERS_H_
 
+#include <types.h>
 #include <BMP085.h>
 #include <TSL2561.h>
 #include <DS1338.h>
