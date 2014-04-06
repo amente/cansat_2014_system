@@ -16,7 +16,7 @@
 #define CONFIG_XBEE_FLASH_LEN           32
 
 /* system0 component */
-#define SYS_CFG_CLK_48_MHz
+#define SYS_CFG_CLK_16_MHz
 #define SYS_CFG_BUSCLK_SYSCLK_DIV2
 
 /* power_management0 component */
