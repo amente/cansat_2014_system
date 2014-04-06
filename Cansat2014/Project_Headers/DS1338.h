@@ -21,8 +21,7 @@
 #define DS1338_REG_CTRL_DEF		0xB3  // The default value of the control reg upon startup. Will use to test comm
 
 
-bool_t DS1338_test(void);
-void DS1338_config(void);
+int DS1338_config(void);
 uint16_t DS1338_get_secs(void);
 int DS1338_read_RAM(uint8_t addr, void* buf, uint16_t len);
 int DS1338_write_RAM(uint8_t addr, void* buf, uint16_t len);
