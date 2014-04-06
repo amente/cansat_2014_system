@@ -6,8 +6,8 @@ HardwareSerial &Xbee = Serial1;
 #define MAX_CMD_LEN     20
 #define XMODEM_TIMEOUT  5
 
-#define RESTART_CMD     "q!"
-#define RESTART_BL_CMD  "wq"
+#define RESTART_CMD     ":q!"
+#define RESTART_BL_CMD  ":wq"
 
 void setup() 
 {
@@ -34,7 +34,7 @@ void serialEvent()
   {
     digitalWriteFast(SERIAL_LED, 1);
     char temp = Term.read();
-    if ( (temp == ':' || cmd.length() ) && (millis() - last > XMODEM_TIMEOUT) )  // also checks for xmodem; threshold = 5ms
+    if ( (temp == ':' || cmd.length()) && (millis() - last > XMODEM_TIMEOUT) )  // also checks for xmodem; threshold = 5ms
     {
       Term.write(temp);
       if (temp != '\r')
@@ -53,7 +53,7 @@ void serialEvent()
       }
       else
       {
-        parseCmd(cmd.substring(1)); // trim the leading ':'
+        parseCmd(cmd); // trim the leading ':'
         cmd = "";
       }       
     }    
@@ -70,6 +70,7 @@ void serialEvent()
     if (!cmd.length())
       Term.write(Xbee.read());  
   }
+  delay(1);
   digitalWriteFast(SERIAL_LED, 0);
 }
 
@@ -85,9 +86,14 @@ void parseCmd(String cmd)
   // unmatched command
   else
   {
+    /*
     Term.print(":");
     Term.print(cmd);
     Term.println(" - Invalid Command"); 
+    */
+    
+    // write the cmd back because it might be xmodem code
+    Xbee.print(cmd);
   }
 }
 
