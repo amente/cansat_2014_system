@@ -91,7 +91,7 @@ void BMP085_calibrate(){
                 i2c_write_no_stop(&sendReg, 1);
 	
                 i2c_read(&bmp085, sizeof(short)*11);
-	
+	/*
                 printf("ac1: %d\r",bmp085.ac1);
                 printf("ac2: %d\r",bmp085.ac2);
                 printf("ac3: %d\r",bmp085.ac3);
@@ -104,12 +104,12 @@ void BMP085_calibrate(){
                 printf("b2: %d\r",bmp085.b2);
                 printf("mb: %d\r",bmp085.mb);
                 printf("mc: %d\r",bmp085.mc);
-                printf("md: %d\r",bmp085.md);  
+                printf("md: %d\r",bmp085.md); */
 }
  
  
 //short bmp085_calc_temperature(unsigned long ut)
-long bmp085_convert_temperature(long ut){
+long BMP085_convert_temperature(long ut){
         long temperature;
         long x1,x2, b5;
  
@@ -124,7 +124,7 @@ long bmp085_convert_temperature(long ut){
  
 
 
-long bmp085_calc_pressure(long up,long ut)
+long BMP085_calc_pressure(long up, long ut)
 {
 	/*
    long pressure;
@@ -223,5 +223,7 @@ long bmp085_calc_pressure(long up,long ut)
 	return pval = p + ((x1 + x2 + 3791) >> 4);
 }
 
-
-
+double BMP085_calc_altitude(double pressure, double p0)
+{
+	return 44330.0 * ( 1.0 - pow( (pressure / p0), 0.190295) );
+}

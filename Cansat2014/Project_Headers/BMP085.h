@@ -15,7 +15,7 @@
  
  
 #define BMP085_PRESSURE_OSS         0
-#define BMP085_SAMPLE_DELAY         5//26
+#define BMP085_SAMPLE_DELAY         5
  
 #define BMP085_CONTROL           0xF4
 #define BMP085_TEMPDATA          0xF6
@@ -27,8 +27,9 @@ bool_t BMP085_test(void);
 int16_t BMP085_readTemp(void);
 int32_t BMP085_readPressure(void);
 void BMP085_calibrate(void);
-long bmp085_convert_temperature(long);
-long bmp085_calc_pressure(long,long);
+long BMP085_convert_temperature(long);
+long BMP085_calc_pressure(long,long);
 void BMP085_init(void);
+double BMP085_calc_altitude(double, double);
  
 #endif
