@@ -40,7 +40,7 @@
  *   XPIN9 = power_management0 [Sleep Request Pin]
  *   XPIN10 = GND
  *   XPIN11 = irq0 [IRQ Pin]
- *   XPIN12 = Release [GPIO Pin]
+ *   XPIN12 = RELEASE [GPIO Pin]
  *   XPIN13 = power_management0 [On Sleep Pin]
  *   XPIN14 = VCC REF
  *   XPIN15 = <<UNUSED>>
@@ -168,7 +168,9 @@ void main_setup(void)
 			p_buf[i] = 0;
 	}
 	
-	gpio_set(Release,0);
+	
+	
+	//gpio_set(RELEASE, 0);
 }
 
 unsigned long get_avg_pressure(uint8_t n)
@@ -234,7 +236,9 @@ void send_packet(){
 #pragma INLINE
 void main_loop(void)
 {		
-	send_packet();		
+	//send_packet();		
+	printf("RAW VMEASURE = %u, VMEASURE = %umV\r", vadc_read_raw(), vadc_read());
+	delay(100);
 }
 
 #pragma INLINE
