@@ -287,19 +287,6 @@
       </template>
     </pin_distribution>
   </component>
-  <component name="adc0">
-    <id>adc_component</id>
-    <settings>
-    </settings>
-    <pin_distribution>
-      <template name="Default template" locked="false">
-        <pin_config name="ADC Pin">
-          <selected_pin>20</selected_pin>
-          <is_dynamic>false</is_dynamic>
-        </pin_config>
-      </template>
-    </pin_distribution>
-  </component>
   <component name="irq0">
     <id>gpio_irq</id>
     <settings>
@@ -325,6 +312,48 @@
         <pin_config name="IRQ Pin">
           <selected_pin>11</selected_pin>
           <is_dynamic>false</is_dynamic>
+        </pin_config>
+      </template>
+    </pin_distribution>
+  </component>
+  <component name="Release">
+    <id>standard_gpio</id>
+    <settings>
+      <setting name="GPIO type">
+        <id>gpio_type</id>
+        <value>Output</value>
+      </setting>
+      <setting name="Pullup enabled">
+        <id>pullup_enabled</id>
+        <value>True</value>
+      </setting>
+      <setting name="Enable Slew Rate">
+        <id>slew_rate</id>
+        <value>True</value>
+      </setting>
+      <setting name="Drive Strength">
+        <id>logic</id>
+        <value>High</value>
+      </setting>
+    </settings>
+    <pin_distribution>
+      <template name="Default template" locked="false">
+        <pin_config name="GPIO Pin">
+          <selected_pin>12</selected_pin>
+          <is_dynamic>false</is_dynamic>
+        </pin_config>
+      </template>
+    </pin_distribution>
+  </component>
+  <component name="VMEASURE">
+    <id>adc_component</id>
+    <settings>
+    </settings>
+    <pin_distribution>
+      <template name="Default template" locked="false">
+        <pin_config name="ADC Pin">
+          <selected_pin>18</selected_pin>
+          <is_dynamic>true</is_dynamic>
         </pin_config>
       </template>
     </pin_distribution>

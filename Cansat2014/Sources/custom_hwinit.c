@@ -566,7 +566,11 @@ void gpio_init(void)
 #ifdef ENABLE_GPIO_XPIN_17
 	(void)gpio_config(XPIN_17, GPIO_CFG_XPIN_17);
 #endif
-#ifdef ENABLE_GPIO_XPIN_18
+#ifdef __CONTAINER__
+	#define GPIO_CFG_XPIN_18	(GPIO_CFG_OUTPUT |	\
+							 GPIO_CFG_PULL_UP_EN |	\
+							 GPIO_CFG_SLEW_RATE_EN |\
+							 GPIO_CFG_DRV_STR_HIGH)
 	(void)gpio_config(XPIN_18, GPIO_CFG_XPIN_18);
 #endif
 #ifdef ENABLE_GPIO_XPIN_19
@@ -725,7 +729,9 @@ void adc_init(void)
 	(void)adc_ch_enable(XPIN_17, 1);
 #endif
 #ifdef ENABLE_ADC_XPIN_18
+	#ifdef __PAYLOAD__
 	(void)adc_ch_enable(XPIN_18, 1);
+    #endif
 #endif
 #ifdef ENABLE_ADC_XPIN_19
 	(void)adc_ch_enable(XPIN_19, 1);

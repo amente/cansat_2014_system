@@ -61,10 +61,6 @@
 #define ADC_CFG_MODE_BITS               ADC_CFG_MODE_12BIT
 #define ADC_CFG_OPTIMIZE                ADC_CFG_OPTIMIZE_FOR_POWER
 
-/* adc0 component */
-#define ENABLE_ADC_XPIN_20
-#define adc0                            XPIN_20
-
 /* irq0 component */
 #define ENABLE_GPIO_IRQ_XPIN_11
 #define irq0                            XPIN_11
@@ -77,6 +73,18 @@
 #define orPR11                          shift_xpin_11
 #define andPR11                         ~0
 
+/* Release component */
+#define ENABLE_GPIO_XPIN_12
+#define Release                         XPIN_12
+#define GPIO_CFG_DIR_12                 GPIO_CFG_OUTPUT
+#define GPIO_CFG_PULL_UP_EN_12          GPIO_CFG_PULL_UP_EN
+#define GPIO_CFG_SLEW_RATE_EN_12        GPIO_CFG_SLEW_RATE_EN
+#define GPIO_CFG_DRV_STR_12             GPIO_CFG_DRV_STR_HIGH
+
+/* VMEASURE component */
+#define ENABLE_ADC_XPIN_18
+#define VMEASURE                        XPIN_18
+
 /* Used pins macros */
 #define XPIN_13_USED
 #define XPIN_9_USED
@@ -85,8 +93,9 @@
 #define XPIN_2_USED
 #define XPIN_7_USED
 #define XPIN_19_USED
-#define XPIN_20_USED
 #define XPIN_11_USED
+#define XPIN_12_USED
+#define XPIN_18_USED
 
 
 /* Components includes */

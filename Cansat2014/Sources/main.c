@@ -40,23 +40,23 @@
  *   XPIN9 = power_management0 [Sleep Request Pin]
  *   XPIN10 = GND
  *   XPIN11 = irq0 [IRQ Pin]
- *   XPIN12 = <<UNUSED>>
+ *   XPIN12 = Release [GPIO Pin]
  *   XPIN13 = power_management0 [On Sleep Pin]
  *   XPIN14 = VCC REF
  *   XPIN15 = <<UNUSED>>
  *   XPIN16 = <<UNUSED>>
  *   XPIN17 = <<UNUSED>>
- *   XPIN18 = <<UNUSED>>
+ *   XPIN18 = VMEASURE [ADC Pin]
  *   XPIN19 = i2c0 [SCL Pin]
- *   XPIN20 = adc0 [ADC Pin]
+ *   XPIN20 = <<UNUSED>>
  *
  ************************************/
 
 /** 
- * The payload code will be compiled with the -D__PAYLOAD__ macro so if there's a section 
- * that only applies to the payload then surround it with something like:
+ * The container code will be compiled with the -D__CONTAINER__ macro so if there's a section 
+ * that only applies to the container then surround it with something like:
  * 
- * #ifdef __PAYLOAD__
+ * #ifdef __CONTAINER__
  * 		// do something
  * #endif
  * 
@@ -70,6 +70,7 @@
 #include <TSL2561.h>
 #include <i2c.h>
 #include <xbee/serial.h>
+#include <math.h>
 
 // Team ID is always the first 2 bits in a packet
 #define TEAMID 0x2305
@@ -81,23 +82,22 @@
 #define TEMP_IDX 4
 #define SOURCE_VOLT_IDx 5
 #define LUX_IDX 6
+#define LUX_IR_IDX 7
+#define STATUS_IDX 8
 
-#define PACKET_SIZE 14 // 14 Bytes in total 7*16 bits
-
-// The send buffer
-static uint16_t send_buf[PACKET_SIZE] = {TEAMID,0,0,0,0,0,0};
+#define PACKET_SIZE 18 // 18 Bytes in total 9*16 bits
+// The packet send buffer
+static uint16_t send_buf[PACKET_SIZE/2] = {TEAMID,0,0,0,0,0,0,0,0};
 
 uint16_t CANSAT_UPTIME = 0;
 uint16_t CANSAT_PACKET_COUNT  = 0;
 
-void send_packet(){	
-	send_buf[ALT_IDX] = BMP085_readPressure();
-	send_buf[TEMP_IDX] = BMP085_readTemp();	
-	
-	CANSAT_PACKET_COUNT++;
-	send_buf[PACKET_COUNT_IDX] =CANSAT_PACKET_COUNT;
-	xbee_ser_write(&EMBER_SERIAL_PORT, &send_buf,PACKET_SIZE);	
-}
+#ifdef __CONTAINER__
+#define RELEASE_ALT  500 // Release at 500m
+#define PEAK_ALT  500 // Peak determining altitude is above 500 , i.e ~675m 
+int ascending = 1;
+int released = 0;
+#endif
 
 #ifdef irq0_irq
 static uint8_t got_irq = 0;
@@ -108,40 +108,133 @@ void irq0_irq(void)
 }
 #endif
 
-char buf[20] = 0;
+static unsigned long P0 = 0;
+unsigned long get_avg_pressure(uint8_t);
 
-//#pragma INLINE
-void main_setup(void)
+static unsigned long p_buf[10];
+unsigned long do_lowpass(unsigned long p)
 {
+	char i;
+	static index = 0;
+	unsigned long p_sum = 0;
+	
+	p_buf[index++] = p;
+	if (index > 9) index = 0;
+	for(i=0; i<10; i++)
+		p_sum += p_buf[i];	
+	return p_sum / 10;   
+}
+
+
+#pragma INLINE
+void main_setup(void)
+{ 
+	char buf[48];
+	char num;
+	char i;
+	unsigned long p = 0;
+			
 	// Set xbee baud rate
 	xbee_ser_baudrate(&EMBER_SERIAL_PORT, 9600);	
 	SPMSC2 = 2;  // Enable STOP3 MODE
-	printf("Running... FP: %f\n", 3.14);
-	if (BMP085_test()) printf("Works!\r");
-	else printf("No Works!\r");
+	
+	DS1338_config();	
+	CANSAT_UPTIME = DS1338_get_secs();	
+    #ifdef __DEBUG__
+	printf("Running... %d\r", CANSAT_UPTIME);
+    #endif
+	
+	
+	eeprom_24xxx_read(EEPROM_0, &buf, 12, 7);
+	
+    #ifdef __DEBUG__
+	printf("EEPROM: %s\r", buf);
+    #endif
 	
 	BMP085_init();
+	
+    #ifdef __DEBUG__
+	if(BMP085_test()) printf("BMP085 Works!\r");
+	else printf("BMP085 No Works!\r");
+    #endif
 
+	P0 = get_avg_pressure(10);
 	
-	//while(1);
+    #ifdef __DEBUG__
+	printf("P0 = %lu\r", P0);	
+    #endif
 	
+	for(i=0; i<10; i++){
+			p_buf[i] = 0;
+	}
 	
+	gpio_set(Release,0);
+}
+
+unsigned long get_avg_pressure(uint8_t n)
+{
+	char i;
+	unsigned long ut = BMP085_readTemp();
+	unsigned long up = BMP085_readPressure();
+	unsigned long p = 0;
+	for(i=0; i<n; i++)
+	{			
+		p += BMP085_calc_pressure(up, ut);
+		ut = BMP085_readTemp();
+		up = BMP085_readPressure();
+	}
+	return p / n;
+}
+
+
+void send_packet(){
+	long ut = BMP085_readTemp();
+	long t = BMP085_convert_temperature(ut);
+	long pressure = get_avg_pressure(10);
+	double alt = BMP085_calc_altitude(pressure, P0);
+	int lux_r, IRlux_r, lux, IRlux;
 	
+	//TSL2561_read_raw(&lux_r, &IRlux_r);
+	//TSL2561_CalculateLux(&lux, &IRlux, lux_r, IRlux_r);
 	
-	CANSAT_UPTIME = DS1338_get_secs();
+	send_buf[MISSION_TIME_IDX] = CANSAT_UPTIME;	
+	send_buf[ALT_IDX] = (long)(alt*100); // Altitude in 100m
+	send_buf[TEMP_IDX] = t;	
+	
+    #ifdef __CONTAINER__
+	send_buf[STATUS_IDX]|=0xFF00;
+	if(alt>PEAK_ALT)	{
+		ascending = 0;		
+	}
+	if(ascending == 0){
+		if(alt<RELEASE_ALT){
+			if(!released){
+				gpio_set(Release,1);
+				send_buf[STATUS_IDX]|=0x00FF;	
+				released = 1;
+				delay(500);
+				gpio_set(Release,0);
+			}
+		}
+		
+	}
+    #endif	
+		
+	CANSAT_PACKET_COUNT++;
+	send_buf[PACKET_COUNT_IDX] =CANSAT_PACKET_COUNT;
+	
+	// Put a transmit request to the EMBER 
+	xbee_ser_write(&EMBER_SERIAL_PORT, &send_buf,PACKET_SIZE);		
+	#ifdef __DEBUG__
+	printf("Sent Packet %d\r",CANSAT_PACKET_COUNT);
+    #endif
+	
 }
 
 #pragma INLINE
 void main_loop(void)
-{
-	long ut = BMP085_readTemp();
-	long up = BMP085_readPressure();
-	printf("Raw Temp: %ld Temp = %ld\r", ut,bmp085_convert_temperature(ut));
-	
-	printf("Raw Pressure: %ld Pressure = %lu\r",up, bmp085_calc_pressure(up,ut));
-	//delay(5);
-	//send_packet();
-	//printf("TSL2561: %d\r", TSL2561_read_raw());
+{		
+	send_packet();		
 }
 
 #pragma INLINE
@@ -155,25 +248,18 @@ void main_stop_start(void)
 	pm_set_radio_mode(PM_MODE_RUN);
 }
 
-
 void main(void)
 {	
 	sys_hw_init();
-	//sys_xbee_init();
-	
-
-#ifdef __DEBUG__
+	#ifdef __DEBUG__	
 	printf("\rCompiled on: %s %s\r", __DATE__, __TIME__);
-#endif
-
+    #endif
+	
 	main_setup();
-
 	for(;;)	
 	{	
 		main_loop();		
-		sys_xbee_tick();
-		//CANSAT_PACKET_COUNT = CANSAT_UPTIME+1;  // for now...		
-		//main_stop_start();
-		
+		sys_xbee_tick();			
+		main_stop_start();		
 	}
 }

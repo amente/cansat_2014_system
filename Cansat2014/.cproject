@@ -32,7 +32,6 @@
 							<tool id="hcs08.toolchain.compiler.364618793" name="HCS08 Compiler" superClass="hcs08.toolchain.compiler">
 								<option id="hc08.toolchain.compiler.base.preprocessor.defines.1465664298" name="Define preprocessor macros (-D)" superClass="hc08.toolchain.compiler.base.preprocessor.defines" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="APP_VERSION_STRING=&quot;Cansat2014_${BuildArtifactFileBaseName}&quot;"/>
-									<listOptionValue builtIn="false" value="__NO_FLOAT__"/>
 									<listOptionValue builtIn="false" value="__PAYLOAD__"/>
 								</option>
 								<option id="hsc08.toolchain.compiler.base.input.i.2034606119" name="Include File Path (-I)" superClass="hsc08.toolchain.compiler.base.input.i" valueType="includePath">
@@ -51,6 +50,7 @@
 								<option id="hc08.toolchain.compiler.base.messages.WmsgNu.b.1779864634" name="Disable messages about reading files (-WmsgNu=b)" superClass="hc08.toolchain.compiler.base.messages.WmsgNu.b" value="true" valueType="boolean"/>
 								<option id="hc08.toolchain.compiler.base.messages.Wpd.973200605" name="Error for implicit parameter declaration (-Wpd) " superClass="hc08.toolchain.compiler.base.messages.Wpd" value="true" valueType="boolean"/>
 								<option id="hc08.toolchain.compiler.base.messages.W1.2133673567" name="Don't print INFORMATION messages (-W1)" superClass="hc08.toolchain.compiler.base.messages.W1" value="true" valueType="boolean"/>
+								<option id="hc08.toolchain.compiler.base.codegen.ieee32.doubles.1660304334" superClass="hc08.toolchain.compiler.base.codegen.ieee32.doubles" value="true" valueType="boolean"/>
 								<inputType id="hcs08.toolchain.compiler.base.input.c.447053618" name="HCS08 Compiler C Input" superClass="hcs08.toolchain.compiler.base.input.c"/>
 								<inputType id="hcs08.toolchain.compiler.base.input.cpp.16235581" name="HCS08 Compiler CPP Input" superClass="hcs08.toolchain.compiler.base.input.cpp"/>
 							</tool>
@@ -60,7 +60,7 @@
 							<tool id="hc08.toolchain.linker.1131020750" name="S08 Linker" superClass="hc08.toolchain.linker">
 								<option id="hc08.toolchain.linker.base.general.paramFile.1525881414" name="Parameter File" superClass="hc08.toolchain.linker.base.general.paramFile" value="${ProjDirPath}/Project_Settings/Linker_Files/Project.prm" valueType="string"/>
 								<option id="hc08.toolchain.linker.base.libraries.libs.540924926" name="Libraries" superClass="hc08.toolchain.linker.base.libraries.libs" valueType="libs">
-									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/lib/hc08c/lib/ansiis.lib&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/lib/hc08c/lib/ansifs.lib&quot;"/>
 								</option>
 								<option id="hc08.toolchain.linker.base.messages.WmsgSd.37097664" name="Set messages to Disable" superClass="hc08.toolchain.linker.base.messages.WmsgSd" value="-WmsgSd1100 -WmsgSd1912" valueType="string"/>
 								<inputType id="hc08.toolchain.linker.base.input.1347382694" name="Linker Input" superClass="hc08.toolchain.linker.base.input">
@@ -95,19 +95,6 @@
 							<tool id="hc08.toolchain.preprocessor.1675977760" name="HCS08 Preprocessor" superClass="hc08.toolchain.preprocessor.2049809223"/>
 						</toolChain>
 					</folderInfo>
-					<fileInfo id="toolchain.config.hcs08.release.974252938.852045762.1070741458" name="system.c" rcbsApplicability="disable" resourcePath="Sources/cpu/system.c" toolsToInvoke="hcs08.toolchain.compiler.364618793.821936875">
-						<tool id="hcs08.toolchain.compiler.364618793.821936875" name="HCS08 Compiler" superClass="hcs08.toolchain.compiler.364618793">
-							<option id="hc08.toolchain.compiler.base.general.otherflags.475956575" name="Other flags" superClass="hc08.toolchain.compiler.base.general.otherflags" value="-WmsgSd3303 -WmsgSd20000 -WmsgSd20001" valueType="string"/>
-							<inputType id="hcs08.toolchain.compiler.base.input.c.704976365" name="HCS08 Compiler C Input" superClass="hcs08.toolchain.compiler.base.input.c"/>
-							<inputType id="hcs08.toolchain.compiler.base.input.cpp.1843083630" name="HCS08 Compiler CPP Input" superClass="hcs08.toolchain.compiler.base.input.cpp"/>
-						</tool>
-						<tool customBuildStep="true" id="org.eclipse.cdt.managedbuilder.ui.rcbs.650821580" name="Resource Custom Build Step">
-							<inputType id="org.eclipse.cdt.managedbuilder.ui.rcbs.inputtype.135655810" name="Resource Custom Build Step Input Type">
-								<additionalInput kind="additionalinputdependency" paths=""/>
-							</inputType>
-							<outputType id="org.eclipse.cdt.managedbuilder.ui.rcbs.outputtype.664174659" name="Resource Custom Build Step Output Type"/>
-						</tool>
-					</fileInfo>
 					<sourceEntries>
 						<entry excluding="Sources/cpu/hwinit.c|Sources/drivers/i2c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
@@ -1498,7 +1485,6 @@
 							<tool id="hcs08.toolchain.compiler.1532671476" name="HCS08 Compiler" superClass="hcs08.toolchain.compiler">
 								<option id="hc08.toolchain.compiler.base.preprocessor.defines.1891535560" name="Define preprocessor macros (-D)" superClass="hc08.toolchain.compiler.base.preprocessor.defines" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__CONTAINER__"/>
-									<listOptionValue builtIn="false" value="__NO_FLOAT__"/>
 									<listOptionValue builtIn="false" value="APP_VERSION_STRING=&quot;Cansat2014_Container&quot;"/>
 								</option>
 								<option id="hsc08.toolchain.compiler.base.input.i.1977505357" name="Include File Path (-I)" superClass="hsc08.toolchain.compiler.base.input.i" valueType="includePath">
@@ -1521,7 +1507,7 @@
 							<tool id="hc08.toolchain.linker.1808542755" name="S08 Linker" superClass="hc08.toolchain.linker">
 								<option id="hc08.toolchain.linker.base.general.paramFile.577235793" name="Parameter File" superClass="hc08.toolchain.linker.base.general.paramFile" value="${ProjDirPath}/Project_Settings/Linker_Files/Project.prm" valueType="string"/>
 								<option id="hc08.toolchain.linker.base.libraries.libs.1941229895" name="Libraries" superClass="hc08.toolchain.linker.base.libraries.libs" valueType="libs">
-									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/lib/hc08c/lib/ansiis.lib&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/lib/hc08c/lib/ansifs.lib&quot;"/>
 								</option>
 								<option id="hc08.toolchain.linker.base.messages.WmsgSd.301550981" name="Set messages to Disable" superClass="hc08.toolchain.linker.base.messages.WmsgSd" value="-WmsgSd1100 -WmsgSd1912" valueType="string"/>
 								<inputType id="hc08.toolchain.linker.base.input.766030063" name="Linker Input" superClass="hc08.toolchain.linker.base.input">
