@@ -9,7 +9,7 @@
 #define 	TSL2561_H_
 
 #define		TSL2561_ADDR				0x39	// 7-bit address when ADDR pin is floating
-#define		TSL2561_CMD_TEMPLATE		0xB0	// Template for the command reg. Use the last 4 bits for reg address
+#define		TSL2561_CMD_TEMPLATE		0xA0	// Template for the command reg. Use the last 4 bits for reg address
 
 #define 	TSL2561_INTEGRATION_TIME_13_7	15		// mS
 #define 	TSL2561_INTEGRATION_TIME_101	105		// mS
@@ -172,6 +172,5 @@
 
 bool_t		TSL2561_test(void);
 void 		TSL2561_read_raw(uint16_t *ch0, uint16_t *ch1);
-void 		TSL2561_CalculateLux(unsigned int *lux, unsigned int *IRlux, unsigned int ch0, unsigned int ch1);
 
 #endif /* TSL2561_H_ */
