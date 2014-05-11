@@ -17,12 +17,7 @@ static int32_t buffer2;
 static uint8_t data[2] = { BMP085_CONTROL, 0 };
 
 static bmp085_t bmp085;
- 
-void BMP085_init(void){
-        printf("Initializing BMP085\n");
-        BMP085_calibrate();  
-        bmp085.oversampling_setting = BMP085_PRESSURE_OSS;
-}
+static uint8_t BMP085_isConfiged = 0;
 
 bool_t BMP085_test(void)
 {
@@ -38,6 +33,11 @@ bool_t BMP085_test(void)
  
 int16_t BMP085_readTemp()
 {
+		if (!BMP085_isConfiged)
+		{
+			BMP085_calibrate();
+			BMP085_isConfiged = 1;
+		}
         buffer = 0;
        
         i2c_set_addr(BMP085_I2CADDR);
@@ -53,6 +53,12 @@ int16_t BMP085_readTemp()
  
 int32_t BMP085_readPressure(void)
 {
+	if (!BMP085_isConfiged)
+	{
+		BMP085_calibrate();
+		BMP085_isConfiged = 1;
+	}
+	
 	buffer2 = 0;   
 	i2c_set_addr(BMP085_I2CADDR);          
 	data[1] = BMP085_READPRESSURECMD | (BMP085_PRESSURE_OSS<<6);
