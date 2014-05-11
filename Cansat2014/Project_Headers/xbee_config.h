@@ -49,9 +49,9 @@
 /* i2c0 component */
 #define ENABLE_I2C
 
-/* eep24xxx0 component */
-#define EEPROM_24XXX_0                  eep24xxx0
-#define eep24xxx0                       EEPROM_0
+/* EEPROM0 component */
+#define EEPROM_24XXX_0                  EEPROM0
+#define EEPROM0                         EEPROM_0
 #define EEPROM_24XXX_SLAVE_SUBADDRESS_0 0
 #define EEPROM_24XXX_ADDRESS_BYTES_0    2
 #define EEPROM_24XXX_PAGE_SIZE_0        64

@@ -249,7 +249,7 @@
       </template>
     </pin_distribution>
   </component>
-  <component name="eep24xxx0">
+  <component name="EEPROM0">
     <id>24xxx</id>
     <settings>
       <setting name="I2C Slave Sub-Address">
