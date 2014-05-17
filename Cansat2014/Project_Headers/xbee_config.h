@@ -49,9 +49,9 @@
 /* i2c0 component */
 #define ENABLE_I2C
 
-/* eep24xxx0 component */
-#define EEPROM_24XXX_0                  eep24xxx0
-#define eep24xxx0                       EEPROM_0
+/* EEPROM0 component */
+#define EEPROM_24XXX_0                  EEPROM0
+#define EEPROM0                         EEPROM_0
 #define EEPROM_24XXX_SLAVE_SUBADDRESS_0 0
 #define EEPROM_24XXX_ADDRESS_BYTES_0    2
 #define EEPROM_24XXX_PAGE_SIZE_0        64
@@ -73,7 +73,7 @@
 #define orPR11                          shift_xpin_11
 #define andPR11                         ~0
 
-/* Release component */
+/* RELEASE component */
 #define ENABLE_GPIO_XPIN_12
 #define RELEASE                         XPIN_12
 #define GPIO_CFG_DIR_12                 GPIO_CFG_OUTPUT

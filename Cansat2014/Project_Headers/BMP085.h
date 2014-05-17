@@ -29,7 +29,14 @@ int32_t BMP085_readPressure(void);
 void BMP085_calibrate(void);
 long BMP085_convert_temperature(long);
 long BMP085_calc_pressure(long,long);
-void BMP085_init(void);
 double BMP085_calc_altitude(double, double);
- 
+#define BMP085_init BMP085_calibrate
+
+#pragma pack 1
+typedef struct{
+        int16_t ac1,ac2,ac3;
+        uint16_t ac4,ac5,ac6;
+        int16_t b1,b2,mb,mc,md;        
+}bmp085_t;
+
 #endif

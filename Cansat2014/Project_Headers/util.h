@@ -9,7 +9,6 @@
 #define UTIL_H_
 
 // Global Variables 
-#define CANSAT_TEAM_ID 1337
 extern uint16_t CANSAT_UPTIME;
 extern uint16_t CANSAT_PACKET_COUNT;
 

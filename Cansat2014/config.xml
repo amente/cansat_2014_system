@@ -249,7 +249,7 @@
       </template>
     </pin_distribution>
   </component>
-  <component name="eep24xxx0">
+  <component name="EEPROM0">
     <id>24xxx</id>
     <settings>
       <setting name="I2C Slave Sub-Address">
@@ -316,7 +316,7 @@
       </template>
     </pin_distribution>
   </component>
-  <component name="Release">
+  <component name="RELEASE">
     <id>standard_gpio</id>
     <settings>
       <setting name="GPIO type">
@@ -353,7 +353,7 @@
       <template name="Default template" locked="false">
         <pin_config name="ADC Pin">
           <selected_pin>18</selected_pin>
-          <is_dynamic>true</is_dynamic>
+          <is_dynamic>false</is_dynamic>
         </pin_config>
       </template>
     </pin_distribution>

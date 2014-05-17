@@ -202,7 +202,7 @@ void read_sensors() {
 	long t = BMP085_convert_temperature(ut);
 	long pressure = get_avg_pressure(10);
 	double alt = BMP085_calc_altitude(pressure, P0);
-	uint_16 lux_r, IRlux_r, lux, IRlux;
+	 lux_r, IRlux_r, lux, IRlux;
 	
 #ifdef __PAYLOAD__
 	//TODO: Light Sensor
