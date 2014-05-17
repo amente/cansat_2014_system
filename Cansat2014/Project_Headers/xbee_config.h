@@ -75,7 +75,7 @@
 
 /* Release component */
 #define ENABLE_GPIO_XPIN_12
-#define Release                         XPIN_12
+#define RELEASE                         XPIN_12
 #define GPIO_CFG_DIR_12                 GPIO_CFG_OUTPUT
 #define GPIO_CFG_PULL_UP_EN_12          GPIO_CFG_PULL_UP_EN
 #define GPIO_CFG_SLEW_RATE_EN_12        GPIO_CFG_SLEW_RATE_EN

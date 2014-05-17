@@ -38,7 +38,9 @@ typedef struct{
 static p_bmp085 bmp085;
  
 void BMP085_init(void){
+		#ifdef __DEBUG__
         printf("Initializing BMP085\n");
+		#endif
         BMP085_calibrate();  
         bmp085.oversampling_setting = BMP085_PRESSURE_OSS;
 }

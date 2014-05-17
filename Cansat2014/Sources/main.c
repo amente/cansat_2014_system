@@ -72,6 +72,8 @@
 #include <xbee/serial.h>
 #include <math.h>
 
+#define __DEBUG__
+
 // Team ID is always the first 2 bits in a packet
 #define TEAMID 0x2305
 
@@ -80,30 +82,31 @@
 #define MISSION_TIME_IDX 2
 #define ALT_IDX 3
 #define TEMP_IDX 4
-#define SOURCE_VOLT_IDx 5
+#define SOURCE_VOLT_IDX 5
 #define LUX_IDX 6
 #define LUX_IR_IDX 7
 #define STATUS_IDX 8
 
 #define PACKET_SIZE 18 // 18 Bytes in total 9*16 bits
 // The packet send buffer
-static uint16_t send_buf[PACKET_SIZE/2] = {TEAMID,0,0,0,0,0,0,0,0};
+static uint16_t send_buf[PACKET_SIZE / 2] = { TEAMID, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 uint16_t CANSAT_UPTIME = 0;
-uint16_t CANSAT_PACKET_COUNT  = 0;
+uint16_t CANSAT_PACKET_COUNT = 0;
 
 #ifdef __CONTAINER__
 #define RELEASE_ALT  500 // Release at 500m
-#define PEAK_ALT  500 // Peak determining altitude is above 500 , i.e ~675m 
 int ascending = 1;
 int released = 0;
+int umbrella_deployed = 0;
+int num_descent_check = 3;
+static double alt_buf[3];
 #endif
 
 #ifdef irq0_irq
 static uint8_t got_irq = 0;
-void irq0_irq(void)
-{
-    /* IRQ triggered @ 1Hz */
+void irq0_irq(void) {
+	/* IRQ triggered @ 1Hz */
 	got_irq = 1;
 }
 #endif
@@ -112,73 +115,80 @@ static unsigned long P0 = 0;
 unsigned long get_avg_pressure(uint8_t);
 
 static unsigned long p_buf[10];
-unsigned long do_lowpass(unsigned long p)
-{
+unsigned long do_lowpass(unsigned long p) {
 	char i;
 	static index = 0;
 	unsigned long p_sum = 0;
-	
+
 	p_buf[index++] = p;
-	if (index > 9) index = 0;
-	for(i=0; i<10; i++)
-		p_sum += p_buf[i];	
-	return p_sum / 10;   
+	if (index > 9)
+		index = 0;
+	for (i = 0; i < 10; i++)
+		p_sum += p_buf[i];
+	return p_sum / 10;
 }
 
-
 #pragma INLINE
-void main_setup(void)
-{ 
+void main_setup(void) {
 	char buf[48];
 	char num;
 	char i;
 	unsigned long p = 0;
-			
-	// Set xbee baud rate
-	xbee_ser_baudrate(&EMBER_SERIAL_PORT, 9600);	
-	SPMSC2 = 2;  // Enable STOP3 MODE
-	
-	DS1338_config();	
-	CANSAT_UPTIME = DS1338_get_secs();	
-    #ifdef __DEBUG__
-	printf("Running... %d\r", CANSAT_UPTIME);
-    #endif
-	
-	
-	eeprom_24xxx_read(EEPROM_0, &buf, 12, 7);
-	
-    #ifdef __DEBUG__
-	printf("EEPROM: %s\r", buf);
-    #endif
-	
-	BMP085_init();
-	
-    #ifdef __DEBUG__
-	if(BMP085_test()) printf("BMP085 Works!\r");
-	else printf("BMP085 No Works!\r");
-    #endif
 
+	// Set xbee baud rate
+	xbee_ser_baudrate(&EMBER_SERIAL_PORT, 9600);
+	
+#ifdef __PAYLOAD__
+	SPMSC2 = 2; // Enable STOP3 MODE
+#endif
+
+	DS1338_config();
+	CANSAT_UPTIME = DS1338_get_secs();
+#ifdef __DEBUG__
+	printf("Running... %d\r", CANSAT_UPTIME);
+#endif
+
+	eeprom_24xxx_read(EEPROM_0, &buf, 12, 7);
+
+#ifdef __DEBUG__
+	printf("EEPROM: %s\r", buf);
+#endif
+
+	BMP085_init();
+
+#ifdef __DEBUG__
+	if(BMP085_test()) printf("BMP085 OK!\r");
+	else printf("BMP085 FAIL!\r");
+#endif
+
+#ifdef __DEBUG__
+	printf("Calibrating altitude..\r");
+	printf("Test %f\r",5.0/3);
+#endif
+	
 	P0 = get_avg_pressure(10);
 	
-    #ifdef __DEBUG__
-	printf("P0 = %lu\r", P0);	
-    #endif
-	
-	for(i=0; i<10; i++){
-			p_buf[i] = 0;
+#ifdef __DEBUG__	
+	printf("P0 = %lu\r", P0);
+#endif
+
+	for (i = 0; i < 10; i++) {
+		p_buf[i] = 0;
 	}
-	
-	gpio_set(Release,0);
+
+#ifdef __CONTAINER__
+	//send_buf[STATUS_IDX] |=0xFF00; // If MSB of status is 0xFF it indicates container
+	//gpio_set(RELEASE, 0);
+	//gpio_set(VMEASURE,0);
+#endif
 }
 
-unsigned long get_avg_pressure(uint8_t n)
-{
+unsigned long get_avg_pressure(uint8_t n) {
 	char i;
 	unsigned long ut = BMP085_readTemp();
 	unsigned long up = BMP085_readPressure();
 	unsigned long p = 0;
-	for(i=0; i<n; i++)
-	{			
+	for (i = 0; i < n; i++) {
 		p += BMP085_calc_pressure(up, ut);
 		ut = BMP085_readTemp();
 		up = BMP085_readPressure();
@@ -186,80 +196,118 @@ unsigned long get_avg_pressure(uint8_t n)
 	return p / n;
 }
 
+void read_sensors() {
 
-void send_packet(){
 	long ut = BMP085_readTemp();
 	long t = BMP085_convert_temperature(ut);
 	long pressure = get_avg_pressure(10);
 	double alt = BMP085_calc_altitude(pressure, P0);
-	int lux_r, IRlux_r, lux, IRlux;
+	uint_16 lux_r, IRlux_r, lux, IRlux;
 	
-	//TSL2561_read_raw(&lux_r, &IRlux_r);
-	//TSL2561_CalculateLux(&lux, &IRlux, lux_r, IRlux_r);
+#ifdef __PAYLOAD__
+	//TODO: Light Sensor
+	TSL2561_read_raw(&lux_r, &IRlux_r);
+	send_buf[LUX_IDX] = lux_r;
+	send_buf
+	send_buf[SOURCE_VOLT_IDX] = vadc_read();	
+#endif	
 	
-	send_buf[MISSION_TIME_IDX] = CANSAT_UPTIME;	
-	send_buf[ALT_IDX] = (long)(alt*100); // Altitude in 100m
-	send_buf[TEMP_IDX] = t;	
-	
-    #ifdef __CONTAINER__
-	send_buf[STATUS_IDX]|=0xFF00;
-	if(alt>PEAK_ALT)	{
-		ascending = 0;		
+	send_buf[MISSION_TIME_IDX] = DS1338_get_secs() - CANSAT_UPTIME;
+	send_buf[ALT_IDX] = (long) (alt * 100); // Altitude in 100m
+	send_buf[TEMP_IDX] = t;		
+}
+
+#ifdef __CONTAINER__
+void check_release(){
+	unsigned long pressure ;
+	double alt;
+	int i;
+			
+	//Take three altitude readings in 100ms interval
+	for(i=0;i<3;i++){
+		pressure = get_avg_pressure(10);
+		alt = BMP085_calc_altitude(pressure, P0);	
+		alt_buf[i] = alt;		
+		delay(100);
 	}
-	if(ascending == 0){
-		if(alt<RELEASE_ALT){
-			if(!released){
-				gpio_set(Release,1);
-				send_buf[STATUS_IDX]|=0x00FF;	
-				released = 1;
-				delay(500);
-				gpio_set(Release,0);
-			}
+	
+	// Compare reading to detect decrease pattern
+	if(alt_buf[1]<alt_buf[0] && alt_buf[2]<alt_buf[1]){
+		num_descent_check--; // To prevent noise errors , do this num_descent_check times
+		if (num_descent_check == 0) {
+				// When descent check 
+				if(!umbrella_deployed){
+					gpio_set(VMEASURE, 1); // VMEASURE in container is UMBRELLA RELEASE
+					umbrella_deployed = 1;
+					delay(500);
+					gpio_set(VMEASURE, 0);
+					send_buf[STATUS_IDX] |= 0x00F0; // when first 4 bits of the LSB are set it indicates umbrella deployed  
+				}
+				ascending = 0;
 		}
+	}else{
+		num_descent_check = 3;
+	}	
+			
 		
-	}
-    #endif	
-		
+	if (!ascending && alt < RELEASE_ALT) {
+				if (!released) {
+					gpio_set(RELEASE, 1);
+					released = 1;
+					delay(500);
+					gpio_set(RELEASE, 0);
+					send_buf[STATUS_IDX] |= 0x000F; // when last 4 bits of the LSB are set it indicates payload released  
+		}
+	}	
+}
+#endif
+
+void send_packet() {
 	CANSAT_PACKET_COUNT++;
-	send_buf[PACKET_COUNT_IDX] =CANSAT_PACKET_COUNT;
-	
+	send_buf[PACKET_COUNT_IDX] = CANSAT_PACKET_COUNT;
 	// Put a transmit request to the EMBER 
-	xbee_ser_write(&EMBER_SERIAL_PORT, &send_buf,PACKET_SIZE);		
-	#ifdef __DEBUG__
+	xbee_ser_write(&EMBER_SERIAL_PORT, &send_buf, PACKET_SIZE);
+#ifdef __DEBUG__
 	printf("Sent Packet %d\r",CANSAT_PACKET_COUNT);
-    #endif
-	
+#endif
+
 }
 
 #pragma INLINE
-void main_loop(void)
-{		
-	send_packet();		
+void main_loop(void) {
+	read_sensors();	
+#ifdef __CONTAINER__	
+#ifdef __DEBUG__
+	printf("Checking release..");
+#endif
+	check_release();
+	delay(200);
+#endif
+	send_packet();
 }
 
 #pragma INLINE
-void main_stop_start(void)
-{
+void main_stop_start(void) {
 	pm_set_radio_mode(PM_MODE_STOP);
-	do asm stop;
-	while(!got_irq);	// debounce; stop until there's an actual IRQ
-	++CANSAT_UPTIME;	// increment @ 1HZ
+	do
+		asm stop;
+	while (!got_irq); // debounce; stop until there's an actual IRQ	
 	got_irq = 0;
 	pm_set_radio_mode(PM_MODE_RUN);
 }
 
-void main(void)
-{	
+void main(void) {
 	sys_hw_init();
-	#ifdef __DEBUG__	
+#ifdef __DEBUG__	
 	printf("\rCompiled on: %s %s\r", __DATE__, __TIME__);
-    #endif
-	
+#endif
+
 	main_setup();
-	for(;;)	
-	{	
-		main_loop();		
-		sys_xbee_tick();			
-		main_stop_start();		
+	for (;;) {
+		main_loop();
+		sys_xbee_tick();
+#ifdef __PAYLOAD__
+		main_stop_start();
+#endif
 	}
 }
