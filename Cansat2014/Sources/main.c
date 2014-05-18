@@ -175,9 +175,9 @@ void main_setup(void) {
 	}
 
 #ifdef __CONTAINER__
-	//send_buf[STATUS_IDX] |=0xFF00; // If MSB of status is 0xFF it indicates container
-	//gpio_set(RELEASE, 0);
-	//gpio_set(VMEASURE,0);
+	 send_buf[STATUS_IDX] |=0xFF00; // If MSB of status is 0xFF it indicates container
+	 gpio_set(RELEASE, 0);
+	 gpio_set(VMEASURE,0);
 #endif
 }
 
@@ -210,7 +210,7 @@ void read_sensors() {
 	send_buf[MISSION_TIME_IDX] = DS1338_get_secs() - CANSAT_UPTIME;
 	*(uint32_t*)(&send_buf[ALT_IDX_H]) = (long) (alt * 100); // Altitude in cm
 #ifdef __DEBUG__
-	printf("ALT_H 0x%X ALT_L 0x%X ALT %lu\r",send_buf[ALT_IDX_H],send_buf[ALT_IDX_L],(long) (alt * 100));
+	printf("ALT_H 0x%X ALT_L 0x%X ALT %ld\r",send_buf[ALT_IDX_H],send_buf[ALT_IDX_L],(long) (alt * 100));
 	
 #endif
 	send_buf[TEMP_IDX] = (uint16_t)t;		

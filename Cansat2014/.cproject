@@ -1486,6 +1486,7 @@
 							<tool id="hcs08.toolchain.compiler.1532671476" name="HCS08 Compiler" superClass="hcs08.toolchain.compiler">
 								<option id="hc08.toolchain.compiler.base.preprocessor.defines.1891535560" name="Define preprocessor macros (-D)" superClass="hc08.toolchain.compiler.base.preprocessor.defines" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__CONTAINER__"/>
+									<listOptionValue builtIn="false" value="__DEBUG__"/>
 									<listOptionValue builtIn="false" value="APP_VERSION_STRING=&quot;Cansat2014_Container&quot;"/>
 								</option>
 								<option id="hsc08.toolchain.compiler.base.input.i.1977505357" name="Include File Path (-I)" superClass="hsc08.toolchain.compiler.base.input.i" valueType="includePath">
@@ -1499,6 +1500,7 @@
 									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/lib/hc08c/device/asm_include&quot;"/>
 								</option>
 								<option id="hc08.toolchain.compiler.base.general.otherflags.1685324664" name="Other flags" superClass="hc08.toolchain.compiler.base.general.otherflags" value="-WmsgSd3303" valueType="string"/>
+								<option id="hc08.toolchain.compiler.base.codegen.ieee32.doubles.1746647199" superClass="hc08.toolchain.compiler.base.codegen.ieee32.doubles" value="true" valueType="boolean"/>
 								<inputType id="hcs08.toolchain.compiler.base.input.c.88666151" name="HCS08 Compiler C Input" superClass="hcs08.toolchain.compiler.base.input.c"/>
 								<inputType id="hcs08.toolchain.compiler.base.input.cpp.828313717" name="HCS08 Compiler CPP Input" superClass="hcs08.toolchain.compiler.base.input.cpp"/>
 							</tool>
