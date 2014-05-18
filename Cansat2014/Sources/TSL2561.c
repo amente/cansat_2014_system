@@ -36,14 +36,14 @@ static int TSL2561_power(bool_t state)  // 1 = ON, 0= OFF
 #pragma INLINE
 static void TSL2561_config(void)
 {
-	char timing = TSL2561_REG_TIMING_INTEGRATION_TIME;	// Leave the rest at default
+	char timing = TSL2561_REG_TIMING_INTEGRATION_TIME | TSL2561_GAIN_16X;	// Leave the rest at default
 	TSL2561_set_cmd(TSL2561_REG_TIMING);
 	i2c_write(&timing, 1);
 }
 
 void TSL2561_read_raw(uint16_t *ch0, uint16_t *ch1)
 {
-	uint32_t buf = 0;
+	//uint32_t buf = 0;
 	
 	if (!TSL2561_isConfiged)
 	{
@@ -54,9 +54,18 @@ void TSL2561_read_raw(uint16_t *ch0, uint16_t *ch1)
 	TSL2561_power(1);
 	delay(TSL2561_INTEGRATION_TIME);
 	TSL2561_set_cmd(TSL2561_REG_DATA0LOW);
-	i2c_read(&buf, sizeof(buf));
+	//i2c_read(&buf, sizeof(buf));
+	i2c_read(ch0, 2);
+	TSL2561_set_cmd(TSL2561_REG_DATA1LOW);
+	i2c_read(ch1, 2);
 	TSL2561_power(0);
 
-	*ch0 = swap16(((unsigned int*) &buf)[0]);		// Data coming in is LE while the MCU is BE so the high/low bytes are swapped
-	*ch1 = swap16(((unsigned int*) &buf)[1]);
+	*ch0 = swap16(*ch0);		// Data coming in is LE while the MCU is BE so the high/low bytes are swapped
+	*ch1 = swap16(*ch1);
+	
+#ifdef __DEBUG__
+	 printf("\rCH0 %X\r",*ch0);
+	 printf("\rCH1 %X\r",*ch1);
+#endif
+	
 }

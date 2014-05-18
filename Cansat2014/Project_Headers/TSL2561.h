@@ -17,7 +17,8 @@
 
 #define 	TSL2561_INTEGRATION_TIME	TSL2561_INTEGRATION_TIME_13_7
 
-//#define 	TSL2561_GAIN_16X
+#define		TSL2561_GAIN_1X		0x00
+#define 	TSL2561_GAIN_16X	0x10
 
 #define 	TSL2561_REG_TIMING			0x01
 #define 	TSL2561_REG_TIMING_INTEGRATION_TIME 0x00	// Use the shortest integration time of ~14ms
