@@ -72,19 +72,17 @@
 #include <xbee/serial.h>
 #include <math.h>
 
-#define __DEBUG__
-
 // Team ID is always the first 2 bits in a packet
 #define TEAMID 0x2305
 
 // Indices of other values in the packet send buffer
 #define PACKET_COUNT_IDX 1
 #define MISSION_TIME_IDX 2
-#define ALT_IDX 3
-#define TEMP_IDX 4
-#define SOURCE_VOLT_IDX 5
-#define LUX_IDX 6
-#define LUX_IR_IDX 7
+#define ALT_IDX_H 3
+#define ALT_IDX_L 4
+#define TEMP_IDX 5
+#define SOURCE_VOLT_IDX 6
+#define LUM_IDX 7
 #define STATUS_IDX 8
 
 #define PACKET_SIZE 18 // 18 Bytes in total 9*16 bits
@@ -202,19 +200,20 @@ void read_sensors() {
 	long t = BMP085_convert_temperature(ut);
 	long pressure = get_avg_pressure(10);
 	double alt = BMP085_calc_altitude(pressure, P0);
-	 lux_r, IRlux_r, lux, IRlux;
 	
-#ifdef __PAYLOAD__
-	//TODO: Light Sensor
-	TSL2561_read_raw(&lux_r, &IRlux_r);
-	send_buf[LUX_IDX] = lux_r;
-	send_buf
+		
+#ifdef __PAYLOAD__		
+	send_buf[LUM_IDX] = TSL2561_read_raw();	
 	send_buf[SOURCE_VOLT_IDX] = vadc_read();	
-#endif	
+#endif		
 	
 	send_buf[MISSION_TIME_IDX] = DS1338_get_secs() - CANSAT_UPTIME;
-	send_buf[ALT_IDX] = (long) (alt * 100); // Altitude in 100m
-	send_buf[TEMP_IDX] = t;		
+	*(uint32_t*)(&send_buf[ALT_IDX_H]) = (long) (alt * 100); // Altitude in cm
+#ifdef __DEBUG__
+	printf("ALT_H 0x%X ALT_L 0x%X ALT %lu\r",send_buf[ALT_IDX_H],send_buf[ALT_IDX_L],(long) (alt * 100));
+	
+#endif
+	send_buf[TEMP_IDX] = (uint16_t)t;		
 }
 
 #ifdef __CONTAINER__
@@ -268,7 +267,7 @@ void send_packet() {
 	// Put a transmit request to the EMBER 
 	xbee_ser_write(&EMBER_SERIAL_PORT, &send_buf, PACKET_SIZE);
 #ifdef __DEBUG__
-	printf("Sent Packet %d\r",CANSAT_PACKET_COUNT);
+	printf(">");
 #endif
 
 }
@@ -284,6 +283,7 @@ void main_loop(void) {
 	delay(200);
 #endif
 	send_packet();
+	delay(100);
 }
 
 #pragma INLINE
