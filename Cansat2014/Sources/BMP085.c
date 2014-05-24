@@ -12,6 +12,10 @@
 #include <BMP085.h>
 #include <util.h>
  
+#define P_SORT(a,b) { if ((a)>(b)) P_SWAP((a),(b)); }
+#define P_SWAP(a,b) { unsigned long temp=(a);(a)=(b);(b)=temp; }
+
+
 static uint16_t buffer;
 static int32_t buffer2;
 static uint8_t data[2] = { BMP085_CONTROL, 0 };
@@ -20,6 +24,10 @@ static bmp085_t bmp085;
 static uint8_t BMP085_isConfiged = 0;
 		#ifdef __DEBUG__
 		#endif
+
+#define NUM_SAMPLES 5  // This is fixed 
+static unsigned long P0 = 1; // None zero to avoid division by zero in case sth is wrong
+static unsigned long p_buf[NUM_SAMPLES];
 
 bool_t BMP085_test(void)
 {
@@ -127,7 +135,30 @@ long BMP085_calc_pressure(long up, long ut)
 	return pval = p + ((x1 + x2 + 3791) >> 4);
 }
 
-double BMP085_calc_altitude(double pressure, double p0)
-{
-	return 44330.0 * ( 1.0 - pow( (pressure / p0), 0.190295) );
+double BMP085_calc_altitude(double pressure)
+{	
+	return 44330.0 * ( 1.0 - pow( (pressure / P0), 0.190295) );
 }
+
+unsigned long BMP085_get_median_pressure() {
+	char i;
+	unsigned long ut = BMP085_readTemp();
+	unsigned long up = BMP085_readPressure();	
+	for (i = 0; i < NUM_SAMPLES; i++) {
+		p_buf[i] = BMP085_calc_pressure(up, ut);
+		ut = BMP085_readTemp();
+		up = BMP085_readPressure();
+	}	
+	
+	//Optimized median calculation for five values
+	P_SORT(p_buf[0],p_buf[1]) ; P_SORT(p_buf[3],p_buf[4]) ; P_SORT(p_buf[0],p_buf[3]) ;
+	P_SORT(p_buf[1],p_buf[4]) ; P_SORT(p_buf[1],p_buf[2]) ; P_SORT(p_buf[2],p_buf[3]) ;
+	P_SORT(p_buf[1],p_buf[2]) ; 
+	
+	return(p_buf[2]) ;		
+}
+
+void BMP085_calibrate_alt(void){
+		P0 = BMP085_get_median_pressure();
+}
+

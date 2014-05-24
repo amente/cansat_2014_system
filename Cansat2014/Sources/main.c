@@ -78,27 +78,29 @@
 // Indices of other values in the packet send buffer
 #define PACKET_COUNT_IDX 1
 #define MISSION_TIME_IDX 2
-#define ALT_IDX_H 3
-#define ALT_IDX_L 4
-#define TEMP_IDX 5
-#define SOURCE_VOLT_IDX 6
-#define LUM_IDX 7
-#define STATUS_IDX 8
+#define ALT_IDX 3
+#define TEMP_IDX 4
+#define SOURCE_VOLT_IDX 5
+#define LUM_IDX 6
+#define STATUS_IDX 7
 
-#define PACKET_SIZE 18 // 18 Bytes in total 9*16 bits
+#define PACKET_SIZE 16 // 16 Bytes in total 8*16 bits
 // The packet send buffer
-static uint16_t send_buf[PACKET_SIZE / 2] = { TEAMID, 0, 0, 0, 0, 0, 0, 0, 0 };
+static uint16_t send_buf[PACKET_SIZE / 2] = { TEAMID, 0, 0, 0, 0, 0, 0, 0};
 
 uint16_t CANSAT_UPTIME = 0;
 uint16_t CANSAT_PACKET_COUNT = 0;
 
 #ifdef __CONTAINER__
-#define RELEASE_ALT  500 // Release at 500m
+#define RELEASE_ALT  150 // Release at 500m
 int ascending = 1;
 int released = 0;
 int umbrella_deployed = 0;
 int num_descent_check = 3;
 static double alt_buf[3];
+double release_trigger_alt = 0;
+int release_alt_margin = 15;
+int trigger_set = 0;
 #endif
 
 #ifdef irq0_irq
@@ -109,27 +111,9 @@ void irq0_irq(void) {
 }
 #endif
 
-static unsigned long P0 = 0;
-unsigned long get_avg_pressure(uint8_t);
-
-static unsigned long p_buf[10];
-unsigned long do_lowpass(unsigned long p) {
-	char i;
-	static index = 0;
-	unsigned long p_sum = 0;
-
-	p_buf[index++] = p;
-	if (index > 9)
-		index = 0;
-	for (i = 0; i < 10; i++)
-		p_sum += p_buf[i];
-	return p_sum / 10;
-}
-
 #pragma INLINE
 void main_setup(void) {
 	char buf[48];
-	char num;
 	char i;
 	unsigned long p = 0;
 
@@ -161,18 +145,9 @@ void main_setup(void) {
 
 #ifdef __DEBUG__
 	printf("Calibrating altitude..\r");
-	printf("Test %f\r",5.0/3);
 #endif
 	
-	P0 = get_avg_pressure(10);
-	
-#ifdef __DEBUG__	
-	printf("P0 = %lu\r", P0);
-#endif
-
-	for (i = 0; i < 10; i++) {
-		p_buf[i] = 0;
-	}
+	BMP085_calibrate_alt();
 
 #ifdef __CONTAINER__
 	 send_buf[STATUS_IDX] |=0xFF00; // If MSB of status is 0xFF it indicates container
@@ -181,26 +156,18 @@ void main_setup(void) {
 #endif
 }
 
-unsigned long get_avg_pressure(uint8_t n) {
-	char i;
-	unsigned long ut = BMP085_readTemp();
-	unsigned long up = BMP085_readPressure();
-	unsigned long p = 0;
-	for (i = 0; i < n; i++) {
-		p += BMP085_calc_pressure(up, ut);
-		ut = BMP085_readTemp();
-		up = BMP085_readPressure();
-	}
-	return p / n;
-}
+
 
 void read_sensors() {
 
 	long ut = BMP085_readTemp();
 	long t = BMP085_convert_temperature(ut);
-	long pressure = get_avg_pressure(10);
-	double alt = BMP085_calc_altitude(pressure, P0);
+	long pressure = BMP085_get_median_pressure();
+	double alt = BMP085_calc_altitude(pressure);
 	
+#ifdef __DEBUG__
+	printf("PRESSURE %d\r",pressure)	;	
+#endif	
 		
 #ifdef __PAYLOAD__		
 	send_buf[LUM_IDX] = TSL2561_read_raw();	
@@ -208,53 +175,65 @@ void read_sensors() {
 #endif		
 	
 	send_buf[MISSION_TIME_IDX] = DS1338_get_secs() - CANSAT_UPTIME;
-	*(uint32_t*)(&send_buf[ALT_IDX_H]) = (long) (alt * 100); // Altitude in cm
+	send_buf[ALT_IDX]= (int16_t) (alt * 10); // Altitude in dm
 #ifdef __DEBUG__
-	printf("ALT_H 0x%X ALT_L 0x%X ALT %ld\r",send_buf[ALT_IDX_H],send_buf[ALT_IDX_L],(long) (alt * 100));
+	printf("ALT %d\r",send_buf[ALT_IDX]);
 	
 #endif
 	send_buf[TEMP_IDX] = (uint16_t)t;		
 }
 
 #ifdef __CONTAINER__
-void check_release(){
+
+void check_descent(){
+	/*
 	unsigned long pressure ;
 	double alt;
 	int i;
-			
-	//Take three altitude readings in 100ms interval
+	
 	for(i=0;i<3;i++){
-		pressure = get_avg_pressure(10);
-		alt = BMP085_calc_altitude(pressure, P0);	
-		alt_buf[i] = alt;		
-		delay(100);
+			pressure = get_avg_pressure(10);
+			alt = BMP085_calc_altitude(pressure, P0);	
+			alt_buf[i] = alt;		
+			delay(100);
 	}
 	
 	// Compare reading to detect decrease pattern
 	if(alt_buf[1]<alt_buf[0] && alt_buf[2]<alt_buf[1]){
 		num_descent_check--; // To prevent noise errors , do this num_descent_check times
 		if (num_descent_check == 0) {
-				// When descent check 
-				if(!umbrella_deployed){
-					gpio_set(VMEASURE, 1); // VMEASURE in container is UMBRELLA RELEASE
-					umbrella_deployed = 1;
-					delay(500);
-					gpio_set(VMEASURE, 0);
-					send_buf[STATUS_IDX] |= 0x00F0; // when first 4 bits of the LSB are set it indicates umbrella deployed  
-				}
+			  if(!trigger_set){
+			   release_trigger_alt = alt_buf[2];	
+			   trigger_set = 1;
+			  }
 				ascending = 0;
 		}
 	}else{
 		num_descent_check = 3;
-	}	
-			
-		
-	if (!ascending && alt < RELEASE_ALT) {
+	}	*/
+}
+
+void check_deploy_umbrella(){
+	//Take three altitude readings in 100ms interval		
+		if(send_buf[ALT_IDX] > release_trigger_alt+release_alt_margin){
+		    // When descent check 
+			if(!ascending && !umbrella_deployed){
+							gpio_set(RELEASE, 1); // VMEASURE in container is UMBRELLA RELEASE
+							umbrella_deployed = 1;
+							delay(500);
+							gpio_set(RELEASE, 0);
+							send_buf[STATUS_IDX] |= 0x00F0; // when first 4 bits of the LSB are set it indicates umbrella deployed  
+			}
+	}		
+}
+
+void check_release(){		
+	if (!ascending && send_buf[ALT_IDX] < RELEASE_ALT) {
 				if (!released) {
-					gpio_set(RELEASE, 1);
+					gpio_set(VMEASURE, 1);
 					released = 1;
 					delay(500);
-					gpio_set(RELEASE, 0);
+					gpio_set(VMEASURE, 0);
 					send_buf[STATUS_IDX] |= 0x000F; // when last 4 bits of the LSB are set it indicates payload released  
 		}
 	}	
@@ -279,7 +258,15 @@ void main_loop(void) {
 #ifdef __DEBUG__
 	printf("Checking release..");
 #endif
-	check_release();
+	if(ascending){
+		check_descent();
+	}	
+	if(!umbrella_deployed){
+		check_deploy_umbrella();
+	}	
+	if(!released){
+		check_release();
+	}	
 	delay(200);
 #endif
 	send_packet();
