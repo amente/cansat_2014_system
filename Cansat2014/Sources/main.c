@@ -40,7 +40,7 @@
  *   XPIN9 = power_management0 [Sleep Request Pin]
  *   XPIN10 = GND
  *   XPIN11 = irq0 [IRQ Pin]
- *   XPIN12 = Release [GPIO Pin]
+ *   XPIN12 = RELEASE [GPIO Pin]
  *   XPIN13 = power_management0 [On Sleep Pin]
  *   XPIN14 = VCC REF
  *   XPIN15 = <<UNUSED>>
@@ -71,6 +71,7 @@
 #include <i2c.h>
 #include <xbee/serial.h>
 #include <math.h>
+#include <rtc.h>
 
 // Team ID is always the first 2 bits in a packet
 #define TEAMID 0x2305
@@ -90,17 +91,18 @@ static uint16_t send_buf[PACKET_SIZE / 2] = { TEAMID, 0, 0, 0, 0, 0, 0, 0};
 
 uint16_t CANSAT_UPTIME = 0;
 uint16_t CANSAT_PACKET_COUNT = 0;
+void send_packet(void);
 
 #ifdef __CONTAINER__
-#define RELEASE_ALT  150 // Release at 500m
+#define RELEASE_ALT  150       // Release at 500m
+#define ARM_ALT    100          // Arm umbrella deplyment and release once this alt is reached
+#define DESCENT_TRIGGER_DISTANCE 10  // Change cansat state to descent if max_alt-cur_alt is this value 
+int armed = 0;
 int ascending = 1;
 int released = 0;
 int umbrella_deployed = 0;
-int num_descent_check = 3;
-static double alt_buf[3];
-double release_trigger_alt = 0;
-int release_alt_margin = 15;
-int trigger_set = 0;
+double max_alt = 0;
+double cur_alt = 0;
 #endif
 
 #ifdef irq0_irq
@@ -113,8 +115,7 @@ void irq0_irq(void) {
 
 #pragma INLINE
 void main_setup(void) {
-	char buf[48];
-	char i;
+	char buf[48];	
 	unsigned long p = 0;
 
 	// Set xbee baud rate
@@ -165,6 +166,16 @@ void read_sensors() {
 	long pressure = BMP085_get_median_pressure();
 	double alt = BMP085_calc_altitude(pressure);
 	
+#ifdef __CONTAINER__
+	cur_alt = alt;
+	if(!armed && cur_alt > RELEASE_ALT){
+		armed = 1;
+	}
+	if(cur_alt>max_alt){
+		max_alt=cur_alt;
+	}
+#endif
+	
 #ifdef __DEBUG__
 	printf("PRESSURE %d\r",pressure)	;	
 #endif	
@@ -185,59 +196,42 @@ void read_sensors() {
 
 #ifdef __CONTAINER__
 
-void check_descent(){
-	/*
-	unsigned long pressure ;
-	double alt;
-	int i;
-	
-	for(i=0;i<3;i++){
-			pressure = get_avg_pressure(10);
-			alt = BMP085_calc_altitude(pressure, P0);	
-			alt_buf[i] = alt;		
-			delay(100);
-	}
-	
-	// Compare reading to detect decrease pattern
-	if(alt_buf[1]<alt_buf[0] && alt_buf[2]<alt_buf[1]){
-		num_descent_check--; // To prevent noise errors , do this num_descent_check times
-		if (num_descent_check == 0) {
-			  if(!trigger_set){
-			   release_trigger_alt = alt_buf[2];	
-			   trigger_set = 1;
-			  }
+void check_descent(){	   
+		if(ascending){
+			if(max_alt - cur_alt > DESCENT_TRIGGER_DISTANCE ){
 				ascending = 0;
+			}
 		}
-	}else{
-		num_descent_check = 3;
-	}	*/
 }
 
-void check_deploy_umbrella(){
-	//Take three altitude readings in 100ms interval		
-		if(send_buf[ALT_IDX] > release_trigger_alt+release_alt_margin){
+void check_deploy_umbrella(){		
 		    // When descent check 
 			if(!ascending && !umbrella_deployed){
-							gpio_set(RELEASE, 1); // VMEASURE in container is UMBRELLA RELEASE
+							gpio_set(VMEASURE, 1); // VMEASURE in container is UMBRELLA RELEASE
 							umbrella_deployed = 1;
 							delay(500);
-							gpio_set(RELEASE, 0);
+							gpio_set(VMEASURE, 0);
 							send_buf[STATUS_IDX] |= 0x00F0; // when first 4 bits of the LSB are set it indicates umbrella deployed  
-			}
-	}		
+			}	
 }
 
 void check_release(){		
-	if (!ascending && send_buf[ALT_IDX] < RELEASE_ALT) {
+	if (!ascending && cur_alt < RELEASE_ALT) {
 				if (!released) {
-					gpio_set(VMEASURE, 1);
+					gpio_set(RELEASE, 1);
 					released = 1;
 					delay(500);
-					gpio_set(VMEASURE, 0);
+					gpio_set(RELEASE, 0);
 					send_buf[STATUS_IDX] |= 0x000F; // when last 4 bits of the LSB are set it indicates payload released  
 		}
 	}	
 }
+
+void rtc_periodic_task(void)
+{
+	send_packet();
+}
+
 #endif
 
 void send_packet() {
@@ -258,7 +252,7 @@ void main_loop(void) {
 #ifdef __DEBUG__
 	printf("Checking release..");
 #endif
-	if(ascending){
+	if(armed ){		
 		check_descent();
 	}	
 	if(!umbrella_deployed){
@@ -266,11 +260,11 @@ void main_loop(void) {
 	}	
 	if(!released){
 		check_release();
-	}	
-	delay(200);
+	}		
 #endif
-	send_packet();
-	delay(100);
+#ifdef __PAYLOAD__
+	send_packet(); // Send packet in payload, container is scheduled with interrupt
+#endif	
 }
 
 #pragma INLINE
@@ -285,6 +279,9 @@ void main_stop_start(void) {
 
 void main(void) {
 	sys_hw_init();
+#ifdef __CONTAINER__
+  rtc_set_periodic_task_period(250);
+#endif
 #ifdef __DEBUG__	
 	printf("\rCompiled on: %s %s\r", __DATE__, __TIME__);
 #endif

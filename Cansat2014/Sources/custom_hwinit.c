@@ -1005,10 +1005,6 @@ void sys_hw_init(void)
 #endif
 #endif
 
-#ifdef RTC_ENABLE_PERIODIC_TASK
-	(void)rtc_set_periodic_task_period(RTC_CFG_PERIODIC_TASK_PERIOD);
-#endif
-
 #ifdef ENABLE_I2C
 	(void)i2c_config(0);
 #endif
