@@ -58,9 +58,6 @@ uint16_t TSL2561_read_raw()
 	TSL2561_power(0);
 	
 	ch0 = swap16(ch0);		// Data coming in is LE while the MCU is BE so the high/low bytes are swapped
-	
-#ifdef __DEBUG__
-	 printf("\rCH0 0x%X\r",ch0);	 
-#endif
+
 	return ch0;
 }

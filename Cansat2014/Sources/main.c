@@ -73,6 +73,26 @@
 #include <math.h>
 #include <rtc.h>
 
+typedef struct {
+	uint8_t reset_cause;
+	uint16_t T0;  // Initial time
+	uint16_t pkt_cnt;	
+	unsigned long P0;  //Initial pressure
+#ifdef __CONTAINER__
+	uint8_t armed;
+	uint8_t ascending;
+	uint8_t released;
+	uint8_t umbrella_deployed;
+	double max_alt;
+	double cur_alt;
+#endif
+}status_t;
+
+static status_t status;
+
+#define POR_RESET   0xAB //POR Reset indicator 
+#define STATUS_RAM_ADR 0x08
+
 // Team ID is always the first 2 bits in a packet
 #define TEAMID 0x2305
 
@@ -89,20 +109,12 @@
 // The packet send buffer
 static uint16_t send_buf[PACKET_SIZE / 2] = { TEAMID, 0, 0, 0, 0, 0, 0, 0};
 
-uint16_t CANSAT_UPTIME = 0;
-uint16_t CANSAT_PACKET_COUNT = 0;
 void send_packet(void);
 
 #ifdef __CONTAINER__
 #define RELEASE_ALT  150       // Release at 500m
 #define ARM_ALT    100          // Arm umbrella deplyment and release once this alt is reached
 #define DESCENT_TRIGGER_DISTANCE 10  // Change cansat state to descent if max_alt-cur_alt is this value 
-int armed = 0;
-int ascending = 1;
-int released = 0;
-int umbrella_deployed = 0;
-double max_alt = 0;
-double cur_alt = 0;
 #endif
 
 #ifdef irq0_irq
@@ -113,22 +125,59 @@ void irq0_irq(void) {
 }
 #endif
 
+void read_status() {
+	DS1338_read_RAM(STATUS_RAM_ADR, &status, sizeof(status));
+	printf("RESET CAUSE 0x%x",status.reset_cause);
+	if (status.reset_cause != POR_RESET) {
+#ifdef __DEBUG__
+		printf("Calibrating altitude..\r");
+#endif	
+		status.P0 = BMP085_calibrate_alt();
+#ifdef __DEBUG__
+		printf("Setting initial time..\r");
+#endif	
+		status.T0 = DS1338_get_secs();
+#ifdef __DEBUG__
+		printf("Init pkt_cnt..\r");
+#endif	
+		status.pkt_cnt = 0;
+		
+#ifdef __CONTAINER__
+		status.armed = 0;
+		status.ascending = 1;
+		status.released = 0;
+		status.umbrella_deployed = 0;
+		status.max_alt = 0;
+		status.cur_alt = 0;
+#endif		
+		status.reset_cause = POR_RESET;
+	}
+}
+
+void write_status(){
+	DS1338_write_RAM(STATUS_RAM_ADR, &status, sizeof(status));	
+}
+
 #pragma INLINE
-void main_setup(void) {
+void main_setup(void) {	
 	char buf[48];	
 	unsigned long p = 0;
+	
+	DS1338_config();	
+	
+    #ifdef __DEBUG__
+		printf("Reading status... \r");
+	#endif
+			
+	#ifdef __DEBUG__
+		printf("Running... \r %d",DS1338_get_secs());
+	#endif
 
 	// Set xbee baud rate
 	xbee_ser_baudrate(&EMBER_SERIAL_PORT, 9600);
 	
 #ifdef __PAYLOAD__
 	SPMSC2 = 2; // Enable STOP3 MODE
-#endif
-
-	DS1338_config();
-	CANSAT_UPTIME = DS1338_get_secs();
-#ifdef __DEBUG__
-	printf("Running... %d\r", CANSAT_UPTIME);
 #endif
 
 	eeprom_24xxx_read(EEPROM_0, &buf, 12, 7);
@@ -144,11 +193,7 @@ void main_setup(void) {
 	else printf("BMP085 FAIL!\r");
 #endif
 
-#ifdef __DEBUG__
-	printf("Calibrating altitude..\r");
-#endif
-	
-	BMP085_calibrate_alt();
+	read_status();	  // Read cansat status from RTC RAM	
 
 #ifdef __CONTAINER__
 	 send_buf[STATUS_IDX] |=0xFF00; // If MSB of status is 0xFF it indicates container
@@ -157,58 +202,50 @@ void main_setup(void) {
 #endif
 }
 
-
-
 void read_sensors() {
 
 	long ut = BMP085_readTemp();
 	long t = BMP085_convert_temperature(ut);
 	long pressure = BMP085_get_median_pressure();
-	double alt = BMP085_calc_altitude(pressure);
+	double alt = BMP085_calc_altitude(pressure,status.P0);
 	
 #ifdef __CONTAINER__
-	cur_alt = alt;
-	if(!armed && cur_alt > RELEASE_ALT){
-		armed = 1;
+	status.cur_alt = alt;
+	if(!status.armed && status.cur_alt > RELEASE_ALT){
+		status.armed = 1;
 	}
-	if(cur_alt>max_alt){
-		max_alt=cur_alt;
+	if(status.cur_alt>status.max_alt){
+		status.max_alt=status.cur_alt;
 	}
 #endif
 	
-#ifdef __DEBUG__
-	printf("PRESSURE %d\r",pressure)	;	
-#endif	
 		
 #ifdef __PAYLOAD__		
 	send_buf[LUM_IDX] = TSL2561_read_raw();	
 	send_buf[SOURCE_VOLT_IDX] = vadc_read();	
 #endif		
 	
-	send_buf[MISSION_TIME_IDX] = DS1338_get_secs() - CANSAT_UPTIME;
+	send_buf[MISSION_TIME_IDX] = DS1338_get_secs() - status.T0;
 	send_buf[ALT_IDX]= (int16_t) (alt * 10); // Altitude in dm
-#ifdef __DEBUG__
-	printf("ALT %d\r",send_buf[ALT_IDX]);
-	
-#endif
+
 	send_buf[TEMP_IDX] = (uint16_t)t;		
 }
 
 #ifdef __CONTAINER__
 
 void check_descent(){	   
-		if(ascending){
-			if(max_alt - cur_alt > DESCENT_TRIGGER_DISTANCE ){
-				ascending = 0;
+		if(status.ascending){
+			if(status.max_alt - status.cur_alt > DESCENT_TRIGGER_DISTANCE ){
+				status.ascending = 0;
 			}
 		}
 }
 
 void check_deploy_umbrella(){		
 		    // When descent check 
-			if(!ascending && !umbrella_deployed){
+			if(!status.ascending && !status.umbrella_deployed){
 							gpio_set(VMEASURE, 1); // VMEASURE in container is UMBRELLA RELEASE
-							umbrella_deployed = 1;
+							status.umbrella_deployed = 1;
 							delay(500);
 							gpio_set(VMEASURE, 0);
 							send_buf[STATUS_IDX] |= 0x00F0; // when first 4 bits of the LSB are set it indicates umbrella deployed  
@@ -216,10 +253,10 @@ void check_deploy_umbrella(){
 }
 
 void check_release(){		
-	if (!ascending && cur_alt < RELEASE_ALT) {
-				if (!released) {
+	if (!status.ascending && status.cur_alt < RELEASE_ALT) {
+				if (!status.released) {
 					gpio_set(RELEASE, 1);
-					released = 1;
+					status.released = 1;
 					delay(500);
 					gpio_set(RELEASE, 0);
 					send_buf[STATUS_IDX] |= 0x000F; // when last 4 bits of the LSB are set it indicates payload released  
@@ -235,14 +272,15 @@ void rtc_periodic_task(void)
 #endif
 
 void send_packet() {
-	CANSAT_PACKET_COUNT++;
-	send_buf[PACKET_COUNT_IDX] = CANSAT_PACKET_COUNT;
+	status.pkt_cnt++;
+	send_buf[PACKET_COUNT_IDX] = status.pkt_cnt;
 	// Put a transmit request to the EMBER 
 	xbee_ser_write(&EMBER_SERIAL_PORT, &send_buf, PACKET_SIZE);
 #ifdef __DEBUG__
 	printf(">");
 #endif
-
+	write_status();
+	eeprom_24xxx_write(EEPROM_0, &send_buf, PACKET_SIZE*status.pkt_cnt,PACKET_SIZE );
 }
 
 #pragma INLINE
@@ -252,19 +290,19 @@ void main_loop(void) {
 #ifdef __DEBUG__
 	printf("Checking release..");
 #endif
-	if(armed ){		
+	if(status.armed ){		
 		check_descent();
 	}	
-	if(!umbrella_deployed){
+	if(!status.umbrella_deployed){
 		check_deploy_umbrella();
 	}	
-	if(!released){
+	if(!status.released){
 		check_release();
 	}		
 #endif
 #ifdef __PAYLOAD__
 	send_packet(); // Send packet in payload, container is scheduled with interrupt
-#endif	
+#endif		
 }
 
 #pragma INLINE

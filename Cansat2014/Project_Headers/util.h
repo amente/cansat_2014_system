@@ -8,9 +8,6 @@
 #ifndef UTIL_H_
 #define UTIL_H_
 
-// Global Variables 
-extern uint16_t CANSAT_UPTIME;
-extern uint16_t CANSAT_PACKET_COUNT;
 
 void delay(uint32_t t);
 

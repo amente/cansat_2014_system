@@ -26,7 +26,6 @@ static uint8_t BMP085_isConfiged = 0;
 		#endif
 
 #define NUM_SAMPLES 5  // This is fixed 
-static unsigned long P0 = 1; // None zero to avoid division by zero in case sth is wrong
 static unsigned long p_buf[NUM_SAMPLES];
 
 bool_t BMP085_test(void)
@@ -135,7 +134,7 @@ long BMP085_calc_pressure(long up, long ut)
 	return pval = p + ((x1 + x2 + 3791) >> 4);
 }
 
-double BMP085_calc_altitude(double pressure)
+double BMP085_calc_altitude(double pressure,double P0)
 {	
 	return 44330.0 * ( 1.0 - pow( (pressure / P0), 0.190295) );
 }
@@ -158,7 +157,7 @@ unsigned long BMP085_get_median_pressure() {
 	return(p_buf[2]) ;		
 }
 
-void BMP085_calibrate_alt(void){
-		P0 = BMP085_get_median_pressure();
+unsigned long BMP085_calibrate_alt(void){		 
+		return BMP085_get_median_pressure();
 }
 
