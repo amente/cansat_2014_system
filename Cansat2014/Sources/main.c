@@ -276,13 +276,14 @@ void send_packet() {
 	send_buf[PACKET_COUNT_IDX] = status.pkt_cnt;
 	// Put a transmit request to the EMBER 
 	xbee_ser_write(&EMBER_SERIAL_PORT, &send_buf, PACKET_SIZE);
+	write_status();
+	eeprom_24xxx_write(EEPROM_0, &send_buf, PACKET_SIZE*status.pkt_cnt,PACKET_SIZE );
+	
 #ifdef __DEBUG__
 	printf(">");
 #endif
-	write_status();
-	eeprom_24xxx_write(EEPROM_0, &send_buf, PACKET_SIZE*status.pkt_cnt,PACKET_SIZE );
 }
-
+static uint32_t cur_time, last_time = 0;
 #pragma INLINE
 void main_loop(void) {
 	read_sensors();	
@@ -298,7 +299,12 @@ void main_loop(void) {
 	}	
 	if(!status.released){
 		check_release();
-	}		
+	}	
+	if ((cur_time = rtc_get_uptime()) > last_time)
+	{
+		send_packet();
+		last_time=cur_time;
+	}
 #endif
 #ifdef __PAYLOAD__
 	send_packet(); // Send packet in payload, container is scheduled with interrupt
@@ -315,10 +321,19 @@ void main_stop_start(void) {
 	pm_set_radio_mode(PM_MODE_RUN);
 }
 
+#ifdef ENABLE_XBEE_HANDLE_RX
+int xbee_transparent_rx(const wpan_envelope_t FAR *envelope, void FAR *context)
+{
+    printf(".");
+
+	return 0;
+}
+#endif
+
 void main(void) {
 	sys_hw_init();
 #ifdef __CONTAINER__
-  rtc_set_periodic_task_period(250);
+  //rtc_set_periodic_task_period(250);
 #endif
 #ifdef __DEBUG__	
 	printf("\rCompiled on: %s %s\r", __DATE__, __TIME__);

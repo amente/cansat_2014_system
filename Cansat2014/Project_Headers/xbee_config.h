@@ -34,6 +34,7 @@
 #define ENABLE_RTC
 
 /* network0 component */
+#define ENABLE_XBEE_HANDLE_RX
 
 /* uart0 component */
 #define ENABLE_UART
