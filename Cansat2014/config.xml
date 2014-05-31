@@ -169,7 +169,7 @@
           </setting>
           <setting name="Process incoming frames">
             <id>packet_reception_ao</id>
-            <value>Disabled</value>
+            <value>Enabled</value>
           </setting>
           <setting name="Over-the-Air Firmware Update">
             <id>ota_update_enable</id>
