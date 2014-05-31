@@ -110,6 +110,7 @@ static status_t status;
 static uint16_t send_buf[PACKET_SIZE / 2] = { TEAMID, 0, 0, 0, 0, 0, 0, 0};
 
 void send_packet(void);
+void post(void);
 
 #ifdef __CONTAINER__
 #define RELEASE_ALT  150       // Release at 500m
@@ -151,7 +152,52 @@ void read_status() {
 		status.cur_alt = 0;
 #endif		
 		status.reset_cause = POR_RESET;
+		post();		
 	}
+}
+
+void post(void){
+	char test[] = "Hello";	
+	char test2[sizeof(test)];
+	char i = 0;
+	
+	char buf[10];	
+	buf[0] = 0xFF;
+	
+	DS1338_write_RAM(0x32,&test,sizeof(test));
+	DS1338_read_RAM(0x32,&test2,sizeof(test2));
+	if(strcmp(test,test2) ==0){
+		buf[1] = 0xFF;
+	}else{buf[1] = 0;}
+	
+	if(BMP085_test()){
+		buf[2] = 0xFF;
+	}else{buf[2] = 0;}
+	
+   memset(test2,0,sizeof(test2));	
+   eeprom_24xxx_write(EEPROM_0, &test, 0x7FF0, sizeof(test));
+   eeprom_24xxx_read(EEPROM_0, &test2, 0x7FF0, sizeof(test2));
+   if(strcmp(test,test2) ==0){
+   		buf[3] = 0xFF;
+   	}else{buf[3] = 0;}
+	 
+#ifdef __PAYLOAD__
+   	   buf[0] = 0x00;
+   	   if(TSL2561_test()){
+   		   buf[4] = 0xFF;
+   	   }else{buf[4] = 0;}
+   	   
+   	   if(vadc_read()>2800){
+   		  buf[5] = 0xFF;
+   	   }else{buf[5] = 0;}   	   
+#endif
+   
+  *(unsigned long *)&buf[6] = status.P0;
+	printf("POST");
+   for(i =0;i<sizeof(buf);i++){
+	   printf("%X",buf[i]);
+   }
+  
 }
 
 void write_status(){
@@ -234,7 +280,7 @@ void read_sensors() {
 #ifdef __CONTAINER__
 
 void check_descent(){	   
-		if(status.ascending){
+		if(status.ascending && status.cur_alt>0){
 			if(status.max_alt - status.cur_alt > DESCENT_TRIGGER_DISTANCE ){
 				status.ascending = 0;
 			}
