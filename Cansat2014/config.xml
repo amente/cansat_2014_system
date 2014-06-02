@@ -100,7 +100,7 @@
       </setting>
       <setting name="BDM Pin">
         <id>bdm_pin</id>
-        <value>Disabled</value>
+        <value>Enabled</value>
       </setting>
       <setting name="RSSI PWM Pin">
         <id>rssi_pwm_pin</id>
@@ -111,6 +111,10 @@
       <template name="Default template" locked="false">
         <pin_config name="Reset Pin">
           <selected_pin>5</selected_pin>
+          <is_dynamic>false</is_dynamic>
+        </pin_config>
+        <pin_config name="BKGD Pin">
+          <selected_pin>8</selected_pin>
           <is_dynamic>false</is_dynamic>
         </pin_config>
       </template>
@@ -169,7 +173,7 @@
           </setting>
           <setting name="Process incoming frames">
             <id>packet_reception_ao</id>
-            <value>Enabled</value>
+            <value>Disabled</value>
           </setting>
           <setting name="Over-the-Air Firmware Update">
             <id>ota_update_enable</id>

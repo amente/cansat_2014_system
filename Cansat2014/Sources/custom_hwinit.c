@@ -568,7 +568,7 @@ void gpio_init(void)
 #endif
 #ifdef __CONTAINER__
 	#define GPIO_CFG_XPIN_18	(GPIO_CFG_OUTPUT |	\
-							 GPIO_CFG_PULL_UP_EN |	\
+							GPIO_CFG_PULL_UP_DIS |	\
 							 GPIO_CFG_SLEW_RATE_EN |\
 							 GPIO_CFG_DRV_STR_HIGH)
 	(void)gpio_config(XPIN_18, GPIO_CFG_XPIN_18);

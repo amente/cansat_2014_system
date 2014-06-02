@@ -36,7 +36,7 @@ static int TSL2561_power(bool_t state)  // 1 = ON, 0= OFF
 #pragma INLINE
 static void TSL2561_config(void)
 {
-	char timing = TSL2561_REG_TIMING_INTEGRATION_TIME | TSL2561_GAIN_16X;	// Leave the rest at default
+	char timing = TSL2561_REG_TIMING_INTEGRATION_TIME | TSL2561_GAIN_1X;	// Leave the rest at default
 	TSL2561_set_cmd(TSL2561_REG_TIMING);
 	i2c_write(&timing, 1);
 }

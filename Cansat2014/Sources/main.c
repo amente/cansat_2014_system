@@ -36,7 +36,7 @@
  *   XPIN5 = special0 [Reset Pin]
  *   XPIN6 = <<UNUSED>>
  *   XPIN7 = i2c0 [SDA Pin]
- *   XPIN8 = <<UNUSED>>
+ *   XPIN8 = special0 [BKGD Pin]
  *   XPIN9 = power_management0 [Sleep Request Pin]
  *   XPIN10 = GND
  *   XPIN11 = irq0 [IRQ Pin]
@@ -71,6 +71,7 @@
 #include <i2c.h>
 #include <xbee/serial.h>
 #include <math.h>
+#include <wpan/types.h>
 #include <rtc.h>
 
 typedef struct {
@@ -113,9 +114,9 @@ void send_packet(void);
 void post(void);
 
 #ifdef __CONTAINER__
-#define RELEASE_ALT  150       // Release at 500m
-#define ARM_ALT    100          // Arm umbrella deplyment and release once this alt is reached
-#define DESCENT_TRIGGER_DISTANCE 10  // Change cansat state to descent if max_alt-cur_alt is this value 
+#define RELEASE_ALT  10    // Release at 500m
+#define ARM_ALT    10        // Arm umbrella deplyment and release once this alt is reached
+#define DESCENT_TRIGGER_DISTANCE 3  // Change cansat state to descent if max_alt-cur_alt above is this value 
 #endif
 
 #ifdef irq0_irq
@@ -205,9 +206,16 @@ void write_status(){
 }
 
 #pragma INLINE
-void main_setup(void) {	
+void main_setup(void) {
 	char buf[48];	
 	unsigned long p = 0;
+		
+#ifdef __CONTAINER__
+	 send_buf[STATUS_IDX] |=0xFF00; // If MSB of status is 0xFF it indicates container
+	 gpio_set(RELEASE, 0);
+	 gpio_set(VMEASURE,0);
+#endif
+	
 	
 	DS1338_config();	
 	
@@ -240,12 +248,6 @@ void main_setup(void) {
 #endif
 
 	read_status();	  // Read cansat status from RTC RAM	
-
-#ifdef __CONTAINER__
-	 send_buf[STATUS_IDX] |=0xFF00; // If MSB of status is 0xFF it indicates container
-	 gpio_set(RELEASE, 0);
-	 gpio_set(VMEASURE,0);
-#endif
 }
 
 void read_sensors() {
@@ -293,8 +295,7 @@ void check_deploy_umbrella(){
 							gpio_set(VMEASURE, 1); // VMEASURE in container is UMBRELLA RELEASE
 							status.umbrella_deployed = 1;
 							delay(500);
-							gpio_set(VMEASURE, 0);
-							send_buf[STATUS_IDX] |= 0x00F0; // when first 4 bits of the LSB are set it indicates umbrella deployed  
+							gpio_set(VMEASURE, 0);							
 			}	
 }
 
@@ -304,8 +305,7 @@ void check_release(){
 					gpio_set(RELEASE, 1);
 					status.released = 1;
 					delay(500);
-					gpio_set(RELEASE, 0);
-					send_buf[STATUS_IDX] |= 0x000F; // when last 4 bits of the LSB are set it indicates payload released  
+					gpio_set(RELEASE, 0);					
 		}
 	}	
 }
@@ -323,7 +323,7 @@ void send_packet() {
 	// Put a transmit request to the EMBER 
 	xbee_ser_write(&EMBER_SERIAL_PORT, &send_buf, PACKET_SIZE);
 	write_status();
-	eeprom_24xxx_write(EEPROM_0, &send_buf, PACKET_SIZE*status.pkt_cnt,PACKET_SIZE );
+	eeprom_24xxx_write(EEPROM_0, &send_buf, PACKET_SIZE*(status.pkt_cnt-1),PACKET_SIZE );
 	
 #ifdef __DEBUG__
 	printf(">");
@@ -351,6 +351,8 @@ void main_loop(void) {
 		send_packet();
 		last_time=cur_time;
 	}
+	send_buf[STATUS_IDX] |=( (status.umbrella_deployed)?0x00F0:0x0000);
+	send_buf[STATUS_IDX] |=( (status.released)?0x000F:0x0000);
 #endif
 #ifdef __PAYLOAD__
 	send_packet(); // Send packet in payload, container is scheduled with interrupt
@@ -367,20 +369,8 @@ void main_stop_start(void) {
 	pm_set_radio_mode(PM_MODE_RUN);
 }
 
-#ifdef ENABLE_XBEE_HANDLE_RX
-int xbee_transparent_rx(const wpan_envelope_t FAR *envelope, void FAR *context)
-{
-    printf(".");
-
-	return 0;
-}
-#endif
-
 void main(void) {
-	sys_hw_init();
-#ifdef __CONTAINER__
-  //rtc_set_periodic_task_period(250);
-#endif
+	sys_hw_init();	
 #ifdef __DEBUG__	
 	printf("\rCompiled on: %s %s\r", __DATE__, __TIME__);
 #endif
