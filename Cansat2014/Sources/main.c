@@ -84,6 +84,8 @@ typedef struct {
 	uint8_t ascending;
 	uint8_t released;
 	uint8_t umbrella_deployed;
+	char num_release_attempt;
+	char num_deploy_attempt;
 	double max_alt;
 	double cur_alt;
 #endif
@@ -114,9 +116,11 @@ void send_packet(void);
 void post(void);
 
 #ifdef __CONTAINER__
-#define RELEASE_ALT  10    // Release at 500m
+#define RELEASE_ALT  15   // Release at 500m
 #define ARM_ALT    10        // Arm umbrella deplyment and release once this alt is reached
 #define DESCENT_TRIGGER_DISTANCE 3  // Change cansat state to descent if max_alt-cur_alt above is this value 
+#define MAX_DEPLOY_ATTEMPT 3
+#define MAX_RELEASE_ATTEMPT 3
 #endif
 
 #ifdef irq0_irq
@@ -151,6 +155,8 @@ void read_status() {
 		status.umbrella_deployed = 0;
 		status.max_alt = 0;
 		status.cur_alt = 0;
+		status.num_release_attempt = 0;
+		status.num_deploy_attempt = 0;
 #endif		
 		status.reset_cause = POR_RESET;
 		post();		
@@ -259,7 +265,7 @@ void read_sensors() {
 	
 #ifdef __CONTAINER__
 	status.cur_alt = alt;
-	if(!status.armed && status.cur_alt > RELEASE_ALT){
+	if(!status.armed && status.cur_alt > ARM_ALT){
 		status.armed = 1;
 	}
 	if(status.cur_alt>status.max_alt){
@@ -291,22 +297,22 @@ void check_descent(){
 
 void check_deploy_umbrella(){		
 		    // When descent check 
-			if(!status.ascending && !status.umbrella_deployed){
+			if(!status.ascending && status.num_deploy_attempt<MAX_DEPLOY_ATTEMPT){
 							gpio_set(VMEASURE, 1); // VMEASURE in container is UMBRELLA RELEASE
 							status.umbrella_deployed = 1;
 							delay(500);
-							gpio_set(VMEASURE, 0);							
+							gpio_set(VMEASURE, 0);				
+							status.num_deploy_attempt++;
 			}	
 }
 
 void check_release(){		
-	if (!status.ascending && status.cur_alt < RELEASE_ALT) {
-				if (!status.released) {
+	if (!status.ascending && status.cur_alt < RELEASE_ALT && status.num_release_attempt<MAX_RELEASE_ATTEMPT) {				
 					gpio_set(RELEASE, 1);
 					status.released = 1;
 					delay(500);
-					gpio_set(RELEASE, 0);					
-		}
+					gpio_set(RELEASE, 0);		
+					status.num_release_attempt++;
 	}	
 }
 
