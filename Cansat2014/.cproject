@@ -32,7 +32,6 @@
 							<tool id="hcs08.toolchain.compiler.364618793" name="HCS08 Compiler" superClass="hcs08.toolchain.compiler">
 								<option id="hc08.toolchain.compiler.base.preprocessor.defines.1465664298" name="Define preprocessor macros (-D)" superClass="hc08.toolchain.compiler.base.preprocessor.defines" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="APP_VERSION_STRING=&quot;Cansat2014_${BuildArtifactFileBaseName}&quot;"/>
-									<listOptionValue builtIn="false" value="__DEBUG__"/>
 									<listOptionValue builtIn="false" value="__PAYLOAD__"/>
 								</option>
 								<option id="hsc08.toolchain.compiler.base.input.i.2034606119" name="Include File Path (-I)" superClass="hsc08.toolchain.compiler.base.input.i" valueType="includePath">
@@ -1487,7 +1486,6 @@
 								<option id="hc08.toolchain.compiler.base.preprocessor.defines.1891535560" name="Define preprocessor macros (-D)" superClass="hc08.toolchain.compiler.base.preprocessor.defines" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__CONTAINER__"/>
 									<listOptionValue builtIn="false" value="RTC_ENABLE_PERIODIC_TASK"/>
-									<listOptionValue builtIn="false" value="__DEBUG__"/>
 									<listOptionValue builtIn="false" value="APP_VERSION_STRING=&quot;Cansat2014_Container&quot;"/>
 								</option>
 								<option id="hsc08.toolchain.compiler.base.input.i.1977505357" name="Include File Path (-I)" superClass="hsc08.toolchain.compiler.base.input.i" valueType="includePath">

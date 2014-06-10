@@ -116,9 +116,9 @@ void send_packet(void);
 void post(void);
 
 #ifdef __CONTAINER__
-#define RELEASE_ALT  15   // Release at 500m
-#define ARM_ALT    10        // Arm umbrella deplyment and release once this alt is reached
-#define DESCENT_TRIGGER_DISTANCE 3  // Change cansat state to descent if max_alt-cur_alt above is this value 
+#define RELEASE_ALT  510   // Release at 500m
+#define ARM_ALT    300       // Arm umbrella deplyment and release once this alt is reached
+#define DESCENT_TRIGGER_DISTANCE 20  // Change cansat state to descent if max_alt-cur_alt above is this value 
 #define MAX_DEPLOY_ATTEMPT 3
 #define MAX_RELEASE_ATTEMPT 3
 #endif
