@@ -266,7 +266,7 @@
       </setting>
       <setting name="EEPROM Page Size">
         <id>period</id>
-        <value>64</value>
+        <value>128</value>
       </setting>
     </settings>
     <pin_distribution>

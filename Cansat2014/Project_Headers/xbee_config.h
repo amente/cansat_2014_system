@@ -27,6 +27,10 @@
 #define POWER_MANAGEMENT_KEEP_UPTIME    0
 #define POWER_MANAGEMENT_ENABLE_LVD     0
 
+/* special0 component */
+#define ENABLE_RESET_PIN_XPIN_5
+#define ENABLE_BKGD_PIN_XPIN_8
+
 /* rtc0 component */
 #define ENABLE_RTC
 
@@ -51,7 +55,7 @@
 #define EEPROM0                         EEPROM_0
 #define EEPROM_24XXX_SLAVE_SUBADDRESS_0 0
 #define EEPROM_24XXX_ADDRESS_BYTES_0    2
-#define EEPROM_24XXX_PAGE_SIZE_0        64
+#define EEPROM_24XXX_PAGE_SIZE_0        128
 
 /* adc_config0 component */
 #define ENABLE_ADC
@@ -82,13 +86,11 @@
 #define ENABLE_ADC_XPIN_18
 #define VMEASURE                        XPIN_18
 
-/* special0 component */
-#define ENABLE_RESET_PIN_XPIN_5
-#define ENABLE_BKGD_PIN_XPIN_8
-
 /* Used pins macros */
 #define XPIN_13_USED
 #define XPIN_9_USED
+#define XPIN_5_USED
+#define XPIN_8_USED
 #define XPIN_3_USED
 #define XPIN_2_USED
 #define XPIN_7_USED
@@ -96,8 +98,6 @@
 #define XPIN_11_USED
 #define XPIN_12_USED
 #define XPIN_18_USED
-#define XPIN_5_USED
-#define XPIN_8_USED
 
 
 /* Components includes */

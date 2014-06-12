@@ -240,9 +240,8 @@ void main_setup(void) {
 	SPMSC2 = 2; // Enable STOP3 MODE
 #endif
 
-	eeprom_24xxx_read(EEPROM_0, &buf, 12, 7);
-
 #ifdef __DEBUG__
+	eeprom_24xxx_read(EEPROM_0, &buf, 12, 7);
 	printf("EEPROM: %s\r", buf);
 #endif
 
@@ -345,13 +344,10 @@ void main_loop(void) {
 #endif
 	if(status.armed ){		
 		check_descent();
-	}	
-	if(!status.umbrella_deployed){
 		check_deploy_umbrella();
+		check_release();		
 	}	
-	if(!status.released){
-		check_release();
-	}	
+	
 	if ((cur_time = rtc_get_uptime()) > last_time)
 	{
 		send_packet();
