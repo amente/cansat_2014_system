@@ -1,1 +1,8 @@
-Import it as a regular Eclipse project but do not copy it into your workspace.
+Carleton CanSat 2014
+===================
+
+System Firmware
+----------------
+
+<img href="http://amente.github.io/images/Projects/CanSat/fsw.png"/> 
+
